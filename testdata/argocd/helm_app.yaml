@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goff-test
+  namespace: openshift-gitops
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pitc-cschlatter
+  sources:
+  - repoURL: 'https://charts.bitnami.com/bitnami'
+    chart: redis
+    targetRevision: 17.10.1
+    helm:
+      valueFiles:
+      - $values/argocd/helm/redis.yaml
+  - repoURL: 'https://github.com/schlapzz/goff-examples'
+    targetRevision: main
+    ref: values
