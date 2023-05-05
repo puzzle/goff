@@ -17,12 +17,7 @@ var argocdCmd = &cobra.Command{
 	Use:   "argocd",
 	Short: "Render manifests from ArgoCD Application",
 	Args:  cobra.ExactArgs(1),
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `Render manifests from ArgoCD Application`,
 	Run: func(cmd *cobra.Command, args []string) {
 		argocd.Render(args[0], *repoServerUrl)
 	},

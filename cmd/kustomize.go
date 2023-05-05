@@ -5,34 +5,22 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"goff/kustomize/kustomizationgraph"
 
 	"github.com/spf13/cobra"
 )
 
+var outputDotDir *string
+
 // kustomizeCmd represents the kustomize command
 var kustomizeCmd = &cobra.Command{
 	Use:   "kustomize",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Generate a DOT file to visualize the dependencies betw",
+	Args:  cobra.ExactArgs(1),
+	Long:  `Generate a DOT file to visualize the dependencies between your kustomize components`,
 	Run: func(cmd *cobra.Command, args []string) {
-		run()
+		kustomizationgraph.Graph(args[0], *outputDotDir)
 	},
-}
-
-func run() {
-	graph, err := kustomizationgraph.New("main").Generate("/home/schlatter/puzzle/goff/goff/testdata/")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Print(graph)
 }
 
 func init() {
@@ -47,4 +35,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// kustomizeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	outputDotDir = diffCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
 }

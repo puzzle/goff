@@ -3,6 +3,7 @@ package kustomizationgraph
 import (
 	"fmt"
 	"goff/kustomize/kustomizationfile"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -10,6 +11,18 @@ import (
 	"github.com/awalterschulze/gographviz"
 	"github.com/pkg/errors"
 )
+
+func Graph(rootDir, outpurDir string) {
+	graph, err := New("main").Generate(rootDir)
+	if err != nil {
+		panic(err)
+	}
+
+	f := filepath.Join(outpurDir, "graph.dot")
+	os.WriteFile(f, []byte(graph), 0777)
+
+	fmt.Print(graph)
+}
 
 type kustomizationGraph struct {
 	*gographviz.Graph
