@@ -33,7 +33,12 @@ func main() {
 
 	goffBin := golang.File("/app/goff")
 
-	goofContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/ubi9-base").WithFile("/app/goff", goffBin).WithEntrypoint([]string{"/app/goff"})
+	templates := daggerClient.Host().Directory("templates")
+
+	goofContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/ubi9-base").
+		WithFile("/app/goff", goffBin).
+		WithDirectory("/app/templates", templates).
+		WithEntrypoint([]string{"/app/goff"})
 
 	secret := daggerClient.SetSecret("gh-secret", os.Getenv("REGISTRY_PASSWORD"))
 
