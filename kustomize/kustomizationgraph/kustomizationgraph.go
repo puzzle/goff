@@ -65,17 +65,6 @@ func (g *kustomizationGraph) Generate(kustomizeDir string) (string, error) {
 		}
 	}
 
-	for _, n := range g.Nodes.Nodes {
-		_, ok := g.Edges.DstToSrcs[n.Name]
-		if !ok {
-			n.Attrs.Add("color", "red")
-		}
-		fmt.Println(n)
-		a := g.Edges
-		fmt.Printf("%+v\n", a)
-
-	}
-
 	return g.String(), nil
 }
 
