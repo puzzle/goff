@@ -17,7 +17,7 @@ var argocdCmd = &cobra.Command{
 	Use:   "argocd",
 	Short: "Render manifests from ArgoCD Application",
 	Args:  cobra.ExactArgs(1),
-	Long:  `Render manifests from ArgoCD Application`,
+	Long:  `Render manifests from ArgoCD Application$`,
 	Run: func(cmd *cobra.Command, args []string) {
 		argocd.Render(args[0], *repoServerUrl)
 	},
