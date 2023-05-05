@@ -5,18 +5,18 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"goff/argocd"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
-var repoServerUrl *string
+var markdown *string
 
-// argocdCmd represents the argocd command
-var argocdCmd = &cobra.Command{
-	Use:   "argocd",
-	Short: "Render manifests from ArgoCD Application",
-	Args:  cobra.ExactArgs(1),
+// diffCmd represents the diff command
+var diffCmd = &cobra.Command{
+	Use:   "diff",
+	Short: "Diff files",
+	Args:  cobra.ExactArgs(2),
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -24,20 +24,20 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		argocd.Render(args[0], *repoServerUrl)
+		fmt.Println("diff called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(argocdCmd)
+	rootCmd.AddCommand(diffCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// argocdCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// diffCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	repoServerUrl = argocdCmd.Flags().String("repoServer", "localhost:8081", "URL to argoCD repo server")
+	markdown = diffCmd.Flags().StringP("markdown", "m", "gitlab", "Markdown template")
 }

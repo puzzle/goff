@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/argoproj/argo-cd/v2/reposerver/apiclient"
@@ -13,9 +16,9 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-func Render() {
+func Render(dir, repoServerUrl string) {
 
-	conn := apiclient.NewRepoServerClientset("0.0.0.0:8081", 30, apiclient.TLSConfiguration{StrictValidation: false})
+	conn := apiclient.NewRepoServerClientset(repoServerUrl, 30, apiclient.TLSConfiguration{StrictValidation: false})
 	r, b, err := conn.NewRepoServerClient()
 	defer r.Close()
 
@@ -65,4 +68,41 @@ func Render() {
 
 	fmt.Printf("%+v", resp.Manifests)
 
+}
+
+type Ressource struct {
+	Metadata   metadata `yaml:"metadata"`
+	ApiVersion string   `yaml:"apiVersion"`
+	Kind       string   `yaml:"kind"`
+}
+
+type metadata struct {
+	Name      string `yaml:"name"`
+	Namespace string `yaml:"namespace"`
+}
+
+func findArgoApps(rootDir string) ([]string, error) {
+	var argoAppFiles []string
+	err := filepath.Walk(rootDir, func(path string, info fs.FileInfo, err error) error {
+		if strings.HasSuffix(info.Name(), ".yml") || strings.HasSuffix(info.Name(), ".yaml") {
+			f := filepath.Join(path, info.Name())
+			data, err := os.ReadFile(f)
+			if err != nil {
+				return err
+			}
+			res := &Ressource{}
+			err = yaml.Unmarshal(data, res)
+			if err != nil {
+				return err
+			}
+
+			if res.Kind == "Application" && res.ApiVersion == "argoproj.io/v1alpha1" {
+				argoAppFiles = append(argoAppFiles, f)
+			}
+
+		}
+		return nil
+	})
+
+	return argoAppFiles, err
 }
