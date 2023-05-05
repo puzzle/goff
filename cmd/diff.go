@@ -17,7 +17,7 @@ var outputDir *string
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
 	Use:   "diff",
-	Short: "Diff files",
+	Short: "Diff files [sourceDir] [targetDir]",
 	Args:  cobra.ExactArgs(2),
 	Long:  `Generate diff between directories`,
 	Run: func(cmd *cobra.Command, args []string) {
