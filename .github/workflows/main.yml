@@ -23,5 +23,5 @@ jobs:
       -
         name: Release and deploy with Dagger
         run: go run ci/main.go
-        with:
+        env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
