@@ -23,7 +23,7 @@ type fileDiff struct {
 	Diff     string
 }
 
-func Diff(title, templateName, sourceDir, tragetDir string) {
+func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
 
 	target, _ := findAsMap(tragetDir)
 	source, _ := findAsMap(sourceDir)
@@ -70,7 +70,14 @@ func Diff(title, templateName, sourceDir, tragetDir string) {
 		Files: diffs,
 	}
 
-	err = template.Execute(os.Stdout, d)
+	path := filepath.Join(outputDir, "diff.md")
+
+	f, err := os.Create(path)
+	if err != nil {
+		panic(err)
+	}
+
+	err = template.Execute(f, d)
 	if err != nil {
 		panic(err)
 	}
@@ -84,6 +91,8 @@ func getTemplate(templateName string) (*template.Template, error) {
 	switch templateName {
 	case "gitlab":
 		file = "gitlab.md"
+	case "markdown":
+		file = "markdown.md"
 	default:
 		return nil, errors.New("unsupported template")
 	}

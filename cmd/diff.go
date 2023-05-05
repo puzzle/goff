@@ -5,12 +5,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"goff/diff"
 
 	"github.com/spf13/cobra"
 )
 
 var markdown *string
+var title *string
+var outputDir *string
 
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
@@ -24,7 +26,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("diff called")
+		diff.Diff(*title, *markdown, args[0], args[1])
 	},
 }
 
@@ -39,5 +41,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	markdown = diffCmd.Flags().StringP("markdown", "m", "gitlab", "Markdown template")
+	markdown = diffCmd.Flags().StringP("markdown", "m", "markdown", "Markdown template")
+	title = diffCmd.Flags().StringP("title", "t", "title", "Title for markdown")
+	outputDir = diffCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
 }
