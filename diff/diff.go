@@ -1,6 +1,7 @@
 package diff
 
 import (
+	"embed"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -11,6 +12,12 @@ import (
 	"github.com/hexops/gotextdiff"
 	"github.com/hexops/gotextdiff/myers"
 	"github.com/hexops/gotextdiff/span"
+)
+
+var (
+	//go:embed templates/*
+	files     embed.FS
+	templates map[string]*template.Template
 )
 
 type diffMd struct {
@@ -99,7 +106,7 @@ func getTemplate(templateName string) (*template.Template, error) {
 
 	templateFile := filepath.Join("templates/", file)
 
-	return template.ParseFiles(templateFile)
+	return template.ParseFS(files, templateFile)
 
 }
 
