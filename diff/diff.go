@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/hexops/gotextdiff"
@@ -119,8 +120,12 @@ func findAsMap(root string) (map[string]string, error) {
 			return e
 		}
 		if filepath.Ext(d.Name()) == ".yaml" {
+
+			relPath := strings.TrimPrefix(s, root)
+			relPath = filepath.Join(relPath, d.Name())
+
 			content, _ := os.ReadFile(s)
-			f[d.Name()] = string(content)
+			f[relPath] = string(content)
 		}
 		return nil
 	})
