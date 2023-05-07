@@ -28,6 +28,7 @@ func main() {
 
 	golang = golang.WithDirectory("/src", source).
 		WithWorkdir("/src").
+		WithEnvVariable("CGO_ENABLED", "0").
 		WithExec([]string{"mkdir", "-p", "/app"}).
 		WithExec([]string{"go", "build", "-o", "/app/goff", "goff"}).
 		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"})
@@ -35,7 +36,7 @@ func main() {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
-	goofContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/ubi9-base").
+	goofContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/alpine-base").
 		WithFile("/bin/goff", goffBin).
 		WithFile("/bin/glab", glabBin).
 		WithEntrypoint([]string{"/bin/goff"})
