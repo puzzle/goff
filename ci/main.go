@@ -29,15 +29,18 @@ func main() {
 	golang = golang.WithDirectory("/src", source).
 		WithWorkdir("/src").
 		WithExec([]string{"mkdir", "-p", "/app"}).
-		WithExec([]string{"go", "build", "-o", "/app/goff", "goff"})
+		WithExec([]string{"go", "build", "-o", "/app/goff", "goff"}).
+		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"})
 
 	goffBin := golang.File("/app/goff")
+	glabBin := golang.File("/go/bin/glab")
 
 	goofContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/ubi9-base").
-		WithFile("/app/goff", goffBin).
-		WithEntrypoint([]string{"/app/goff"})
+		WithFile("/bin/goff", goffBin).
+		WithFile("/bin/glab", glabBin).
+		WithEntrypoint([]string{"/bin/goff"})
 
-	secret := daggerClient.SetSecret("gh-secret", os.Getenv("REGISTRY_PASSWORD"))
+	secret := daggerClient.SetSecret("reg-secret", os.Getenv("REGISTRY_PASSWORD"))
 
 	addr, err := goofContainer.WithRegistryAuth("registry.puzzle.ch", "cschlatter", secret).Publish(ctx, "registry.puzzle.ch/cicd/goff")
 	if err != nil {
