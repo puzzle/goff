@@ -8,7 +8,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 )
 
-require golang.org/x/text v0.7.0 // indirect
+require golang.org/x/text v0.8.0 // indirect
 
 require (
 	github.com/awalterschulze/gographviz v2.0.3+incompatible
@@ -22,10 +22,13 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/Khan/genqlient v0.5.0 // indirect
 	github.com/adrg/xdg v0.4.0 // indirect
+	github.com/fogleman/gg v1.3.0 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.1 // indirect
-	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/tools v0.4.0 // indirect
+	golang.org/x/image v0.6.0 // indirect
+	golang.org/x/mod v0.8.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
 	k8s.io/api v0.24.2 // indirect
 	k8s.io/kubernetes v1.24.2 // indirect
 )
@@ -71,6 +74,7 @@ require (
 	github.com/go-openapi/swag v0.21.1 // indirect
 	github.com/go-redis/cache/v9 v9.0.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
+	github.com/goccy/go-graphviz v0.1.1
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -126,12 +130,12 @@ require (
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/trace v1.11.1 // indirect
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
-	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/term v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/term v0.6.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef // indirect
