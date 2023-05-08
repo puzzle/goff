@@ -33,6 +33,33 @@ type fileDiff struct {
 
 func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
 
+	template, err := getTemplate(templateName)
+	if err != nil {
+		panic(err)
+	}
+
+	diffs := CreateDiffs(tragetDir, sourceDir)
+
+	d := diffMd{
+		Title: title,
+		Files: diffs,
+	}
+
+	path := filepath.Join(outputDir, "diff.md")
+
+	f, err := os.Create(path)
+	if err != nil {
+		panic(err)
+	}
+
+	err = template.Execute(f, d)
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func CreateDiffs(tragetDir string, sourceDir string) []fileDiff {
 	target, _ := findAsMap(tragetDir)
 	source, _ := findAsMap(sourceDir)
 	for file, _ := range source {
@@ -45,11 +72,6 @@ func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
 		if _, ok := source[file]; !ok {
 			source[file] = ""
 		}
-	}
-
-	template, err := getTemplate(templateName)
-	if err != nil {
-		panic(err)
 	}
 
 	diffs := make([]fileDiff, 0)
@@ -72,24 +94,7 @@ func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
 		diffs = append(diffs, diffFile)
 
 	}
-
-	d := diffMd{
-		Title: title,
-		Files: diffs,
-	}
-
-	path := filepath.Join(outputDir, "diff.md")
-
-	f, err := os.Create(path)
-	if err != nil {
-		panic(err)
-	}
-
-	err = template.Execute(f, d)
-	if err != nil {
-		panic(err)
-	}
-
+	return diffs
 }
 
 func getTemplate(templateName string) (*template.Template, error) {
