@@ -37,5 +37,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	repoServerUrl = argocdCmd.Flags().String("repoServer", "localhost:8081", "URL to argoCD repo server")
-	argoOutputDir = diffCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
+	argoOutputDir = argocdCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
 }
