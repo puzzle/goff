@@ -15,6 +15,6 @@ spec:
     helm:
       valueFiles:
       - $values/argocd/helm/redis.yaml
-  - repoURL: 'https://github.com/schlapzz/goff-examples'
+  - repoURL: 'https://github.com/schlapzz/goff-examples.git'
     targetRevision: main
     ref: values

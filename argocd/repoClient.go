@@ -3,6 +3,7 @@ package argocd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -78,12 +79,42 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 		panic(err)
 	}
 
-	fileName := filepath.Base(file)
+	err = os.MkdirAll(outputDir, 0777)
+	if err != nil {
+		panic(err)
+	}
 
-	outputFile := filepath.Join(outputDir, fileName)
+	for _, manifest := range resp.Manifests {
 
-	os.WriteFile(outputFile, []byte(resp.Manifests[0]), 0777)
+		fileName, err := fileNameFromManifest(manifest)
+		if err != nil {
+			panic(err)
+		}
 
+		outputFile := filepath.Join(outputDir, fileName)
+
+		yamlManifest, err := yaml.JSONToYAML([]byte(manifest))
+		if err != nil {
+			panic(err)
+		}
+
+		err = os.WriteFile(outputFile, yamlManifest, 0777)
+		if err != nil {
+			panic(err)
+		}
+
+	}
+
+}
+
+func fileNameFromManifest(manifest string) (string, error) {
+	res := &Ressource{}
+	err := yaml.Unmarshal([]byte(manifest), res)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s-%s.yaml", res.Kind, res.Metadata.Name), nil
 }
 
 type Ressource struct {
