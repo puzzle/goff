@@ -101,8 +101,8 @@ func findArgoApps(rootDir string) ([]string, error) {
 	var argoAppFiles []string
 	err := filepath.Walk(rootDir, func(path string, info fs.FileInfo, err error) error {
 		if strings.HasSuffix(info.Name(), ".yml") || strings.HasSuffix(info.Name(), ".yaml") {
-			f := filepath.Join(path, info.Name())
-			data, err := os.ReadFile(f)
+
+			data, err := os.ReadFile(path)
 			if err != nil {
 				return err
 			}
@@ -113,7 +113,7 @@ func findArgoApps(rootDir string) ([]string, error) {
 			}
 
 			if res.Kind == "Application" && res.ApiVersion == "argoproj.io/v1alpha1" {
-				argoAppFiles = append(argoAppFiles, f)
+				argoAppFiles = append(argoAppFiles, path)
 			}
 
 		}

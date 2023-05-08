@@ -16,7 +16,7 @@ var argoOutputDir *string
 
 // argocdCmd represents the argocd command
 var argocdCmd = &cobra.Command{
-	Use:   "argocd [rrotDir]",
+	Use:   "argocd [rootDir]",
 	Short: "Render manifests from ArgoCD Application",
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render manifests from ArgoCD Application`,
