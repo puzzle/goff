@@ -28,7 +28,6 @@ func main() {
 
 	golang = golang.WithDirectory("/src", source).
 		WithWorkdir("/src").
-		WithEnvVariable("CGO_ENABLED", "0").
 		WithExec([]string{"mkdir", "-p", "/app"}).
 		WithExec([]string{"go", "build", "-o", "/app/goff", "goff"}).
 		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"})
