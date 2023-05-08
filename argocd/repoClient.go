@@ -16,7 +16,6 @@ import (
 )
 
 func Render(dir, repoServerUrl, outputDir string) {
-
 	conn := apiclient.NewRepoServerClientset(repoServerUrl, 30, apiclient.TLSConfiguration{StrictValidation: false})
 	r, b, err := conn.NewRepoServerClient()
 	defer r.Close()
@@ -25,7 +24,21 @@ func Render(dir, repoServerUrl, outputDir string) {
 		panic(err)
 	}
 
-	data, err := os.ReadFile("testdata/app_helm.yaml")
+	files, err := findArgoApps(dir)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, file := range files {
+		renderFile(file, repoServerUrl, outputDir, b)
+	}
+
+}
+
+func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServerServiceClient) {
+
+	data, err := os.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
@@ -60,12 +73,14 @@ func Render(dir, repoServerUrl, outputDir string) {
 		},
 	}
 
-	resp, err := b.GenerateManifest(context.Background(), req)
+	resp, err := client.GenerateManifest(context.Background(), req)
 	if err != nil {
 		panic(err)
 	}
 
-	outputFile := filepath.Join(outputDir, "argo-rendered.yaml")
+	fileName := filepath.Base(file)
+
+	outputFile := filepath.Join(outputDir, fileName)
 
 	os.WriteFile(outputFile, []byte(resp.Manifests[0]), 0777)
 
