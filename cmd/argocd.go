@@ -12,6 +12,8 @@ import (
 
 var repoServerUrl *string
 
+var argoOutputDir *string
+
 // argocdCmd represents the argocd command
 var argocdCmd = &cobra.Command{
 	Use:   "argocd [rrotDir]",
@@ -19,7 +21,7 @@ var argocdCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render manifests from ArgoCD Application`,
 	Run: func(cmd *cobra.Command, args []string) {
-		argocd.Render(args[0], *repoServerUrl)
+		argocd.Render(args[0], *repoServerUrl, *argoOutputDir)
 	},
 }
 
@@ -35,4 +37,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	repoServerUrl = argocdCmd.Flags().String("repoServer", "localhost:8081", "URL to argoCD repo server")
+	argoOutputDir = diffCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
 }

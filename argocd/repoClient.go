@@ -3,7 +3,6 @@ package argocd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -16,7 +15,7 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-func Render(dir, repoServerUrl string) {
+func Render(dir, repoServerUrl, outputDir string) {
 
 	conn := apiclient.NewRepoServerClientset(repoServerUrl, 30, apiclient.TLSConfiguration{StrictValidation: false})
 	r, b, err := conn.NewRepoServerClient()
@@ -66,7 +65,9 @@ func Render(dir, repoServerUrl string) {
 		panic(err)
 	}
 
-	fmt.Printf("%+v", resp.Manifests)
+	outputFile := filepath.Join(outputDir, "argo-rendered.yaml")
+
+	os.WriteFile(outputFile, []byte(resp.Manifests[0]), 0777)
 
 }
 
