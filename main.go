@@ -6,10 +6,8 @@ package main
 
 import (
 	"goff/cmd"
-	"goff/kustomize"
 )
 
 func main() {
 	cmd.Execute()
-	kustomize.BuildAll("testdata/kustomize/source/kustomize", "./out")
 }

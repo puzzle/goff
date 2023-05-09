@@ -5,6 +5,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"goff/cmd/kustomize"
 	"goff/kustomize/kustomizationgraph"
 
 	"github.com/spf13/cobra"
@@ -24,6 +25,7 @@ var kustomizeCmd = &cobra.Command{
 }
 
 func init() {
+	kustomizeCmd.AddCommand(kustomize.KustomizeBuildCmd)
 	rootCmd.AddCommand(kustomizeCmd)
 
 	// Here you will define your flags and configuration settings.
