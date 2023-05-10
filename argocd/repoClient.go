@@ -3,7 +3,7 @@ package argocd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"goff/util"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -86,7 +86,7 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 
 	for _, manifest := range resp.Manifests {
 
-		fileName, err := fileNameFromManifest(manifest)
+		fileName, err := util.FileNameFromManifest(manifest)
 		if err != nil {
 			panic(err)
 		}
@@ -107,27 +107,6 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 
 }
 
-func fileNameFromManifest(manifest string) (string, error) {
-	res := &Ressource{}
-	err := yaml.Unmarshal([]byte(manifest), res)
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%s-%s.yaml", res.Kind, res.Metadata.Name), nil
-}
-
-type Ressource struct {
-	Metadata   metadata `yaml:"metadata"`
-	ApiVersion string   `yaml:"apiVersion"`
-	Kind       string   `yaml:"kind"`
-}
-
-type metadata struct {
-	Name      string `yaml:"name"`
-	Namespace string `yaml:"namespace"`
-}
-
 func findArgoApps(rootDir string) ([]string, error) {
 	var argoAppFiles []string
 	err := filepath.Walk(rootDir, func(path string, info fs.FileInfo, err error) error {
@@ -137,7 +116,7 @@ func findArgoApps(rootDir string) ([]string, error) {
 			if err != nil {
 				return err
 			}
-			res := &Ressource{}
+			res := &util.Ressource{}
 			err = yaml.Unmarshal(data, res)
 			if err != nil {
 				return err
