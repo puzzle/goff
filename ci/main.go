@@ -45,7 +45,12 @@ func main() {
 
 	secret := daggerClient.SetSecret("reg-secret", os.Getenv("REGISTRY_PASSWORD"))
 
-	addr, err := goofContainer.WithRegistryAuth("registry.puzzle.ch", "cschlatter", secret).Publish(ctx, "registry.puzzle.ch/cicd/goff")
+	regUser, ok := os.LookupEnv("REGISTRY_USER")
+	if !ok {
+		regUser = "cschlatter"
+	}
+
+	addr, err := goofContainer.WithRegistryAuth("registry.puzzle.ch", regUser, secret).Publish(ctx, "registry.puzzle.ch/cicd/goff")
 	if err != nil {
 		panic(err)
 	}
