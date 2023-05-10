@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-us-simple-service
+  namespace: prod
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: trivial-go-web-app
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    codefresh.io/app: simple-go-app
+  name: prod-us-simple-deployment
+  namespace: prod
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: trivial-go-web-app
+  template:
+    metadata:
+      labels:
+        app: trivial-go-web-app
+    spec:
+      containers:
+      - env:
+        - name: UI_THEME
+          value: dark
+        - name: CACHE_SIZE
+          value: 1024kb
+        - name: PAGE_LIMIT
+          value: "25"
+        - name: SORTING
+          value: ascending
+        - name: N_BUCKETS
+          value: "42"
+        - name: ENV
+          value: prod-us
+        - name: GPU_ENABLED
+          value: "1"
+        - name: REGION
+          value: us
+        - name: ENV_TYPE
+          value: production
+        - name: PAYPAL_URL
+          value: production.paypal.com
+        - name: DB_USER
+          value: prod_username
+        - name: DB_PASSWORD
+          value: prod_password
+        image: docker.io/kostiscodefresh/simple-env-app:2.0
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+        name: webserver-simple
+        ports:
+        - containerPort: 8081

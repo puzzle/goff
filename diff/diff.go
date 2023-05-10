@@ -127,7 +127,6 @@ func findAsMap(root string) (map[string]string, error) {
 		if filepath.Ext(d.Name()) == ".yaml" {
 
 			relPath := strings.TrimPrefix(s, root)
-			relPath = filepath.Join(relPath, d.Name())
 
 			content, _ := os.ReadFile(s)
 			f[relPath] = string(content)

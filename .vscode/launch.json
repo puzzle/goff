@@ -11,6 +11,22 @@
             "mode": "auto",
             "program": "main.go",
             "args": ["argocd"]
+        },
+        {
+            "name": "Kustomize buidl",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "main.go",
+            "args": ["kustomize", "build", "./testdata/kustomize/source"]
+        },
+        {
+            "name": "Kustomize diff",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "main.go",
+            "args": ["diff", "./testdata/kustomize/source", "./testdata/kustomize/target"]
         }
     ]
 }
