@@ -4,12 +4,10 @@ import (
 	"bytes"
 	"goff/kustomize/kustomizationfile"
 	"goff/util"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"gopkg.in/yaml.v3"
 	"sigs.k8s.io/kustomize/api/filesys"
 	"sigs.k8s.io/kustomize/kustomize/v4/commands/build"
 )
@@ -42,10 +40,7 @@ func BuildAll(sourceDir, targetDir string) {
 			panic(err)
 		}
 
-		outFiles, err := splitYAML(buffy.Bytes())
-		if err != nil {
-			panic(err)
-		}
+		outFiles := bytes.Split(buffy.Bytes(), []byte("---"))
 
 		for _, f := range outFiles {
 			content := string(f)
@@ -56,33 +51,10 @@ func BuildAll(sourceDir, targetDir string) {
 
 			outFile := filepath.Join(outPath, fileName)
 
-			err = os.WriteFile(outFile, buffy.Bytes(), 0777)
+			err = os.WriteFile(outFile, f, 0777)
 			if err != nil {
 				panic(err)
 			}
 		}
 	}
-}
-
-func splitYAML(resources []byte) ([][]byte, error) {
-
-	dec := yaml.NewDecoder(bytes.NewReader(resources))
-
-	var res [][]byte
-	for {
-		var value interface{}
-		err := dec.Decode(&value)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		valueBytes, err := yaml.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, valueBytes)
-	}
-	return res, nil
 }
