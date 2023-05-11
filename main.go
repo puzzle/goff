@@ -6,6 +6,7 @@ package main
 
 import (
 	"goff/cmd"
+	_ "goff/cmd/argocd"
 )
 
 func main() {
