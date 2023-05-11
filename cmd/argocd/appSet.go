@@ -5,8 +5,8 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package argocd
 
 import (
-	"fmt"
-	"goff/cmd"
+	"goff/argocd"
+	parentCmd "goff/cmd"
 
 	"github.com/spf13/cobra"
 )
@@ -18,10 +18,10 @@ var argocdAppSetCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render manifests from ArgoCD ApplicationSets`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("called applicationSets")
+		argocd.RenderApplicationSet(args[0], *parentCmd.ArgoOutputDir)
 	},
 }
 
 func init() {
-	cmd.ArgocdCmd.AddCommand(argocdAppSetCmd)
+	parentCmd.ArgocdCmd.AddCommand(argocdAppSetCmd)
 }

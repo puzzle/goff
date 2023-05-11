@@ -26,14 +26,5 @@ var argocdAppCmd = &cobra.Command{
 
 func init() {
 	pCmd.ArgocdCmd.AddCommand(argocdAppCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// argocdCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	repoServerUrl = argocdAppCmd.Flags().String("repoServer", "localhost:8081", "URL to argoCD repo server")
 }

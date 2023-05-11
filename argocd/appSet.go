@@ -3,13 +3,15 @@ package argocd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/argoproj/argo-cd/v2/applicationset/generators"
+	"github.com/argoproj/argo-cd/v2/applicationset/utils"
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ghodss/yaml"
 )
 
-func RenderApplicationSet(appSetFile string) {
+func RenderApplicationSet(appSetFile, outDir string) {
 
 	appSet := &v1alpha1.ApplicationSet{}
 
@@ -34,7 +36,36 @@ func RenderApplicationSet(appSetFile string) {
 
 	apps, _, err := generateApplications(*appSet, supportedGens)
 
-	fmt.Printf("generated %d apps", len(apps))
+	err = writeApplications(apps, outDir)
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func writeApplications(apps []v1alpha1.Application, ouputDir string) error {
+
+	err := os.MkdirAll(ouputDir, 0777)
+	if err != nil {
+		return err
+	}
+
+	for i := range apps {
+		app := apps[i]
+		data, err := yaml.Marshal(app)
+		if err != nil {
+			return err
+		}
+
+		fileName := fmt.Sprintf("application-%d.yaml", i)
+		fileName = filepath.Join(ouputDir, fileName)
+		err = os.WriteFile(fileName, data, 0777)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedGenerators map[string]generators.Generator) ([]v1alpha1.Application, v1alpha1.ApplicationSetReasonType, error) {
@@ -42,6 +73,8 @@ func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedG
 
 	var firstError error
 	var applicationSetReason v1alpha1.ApplicationSetReasonType
+
+	renderer := utils.Render{}
 
 	for _, requestedGenerator := range applicationSetInfo.Spec.Generators {
 		t, err := generators.Transform(requestedGenerator, supportedGenerators, applicationSetInfo.Spec.Template, &applicationSetInfo, map[string]interface{}{})
@@ -56,11 +89,11 @@ func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedG
 		}
 
 		for _, a := range t {
-			//tmplApplication := getTempApplication(a.Template)
+			tmplApplication := getTempApplication(a.Template)
 
-			for _, _ = range a.Params {
-				//app, err := r.Renderer.RenderTemplateParams(tmplApplication, applicationSetInfo.Spec.SyncPolicy, p, applicationSetInfo.Spec.GoTemplate)
-				app := &v1alpha1.Application{}
+			for _, p := range a.Params {
+				app, err := renderer.RenderTemplateParams(tmplApplication, applicationSetInfo.Spec.SyncPolicy, p, applicationSetInfo.Spec.GoTemplate)
+
 				if err != nil {
 					fmt.Println("error generating application from params")
 
