@@ -18,7 +18,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["kustomize", "build", "./testdata/kustomize/source"]
+            "args": ["kustomize", "build", "./testdata/kustomize/source", "--output-dir=out/"]
         },
         {
             "name": "Kustomize diff",
