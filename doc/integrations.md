@@ -7,6 +7,12 @@ We provide and support following CI Tools
 
 //TODO
 
+## ArgoCD Applications Considerations
+
+Due the limitation of Github we can not override the entrypoint of a service image.
+Therefore we recommend to use our argo-cd-repo server image which just overrides the entrypoint and install netcat
+for the health probe.
+
 # Gitlab
 
 //TODO

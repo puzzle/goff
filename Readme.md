@@ -5,12 +5,23 @@ Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to 
 
 ## How it works
 
+[Checkout the examples](doc/)
+### Kustomize example
 
 1. Create a new branch and commit your changes in your Kustomize deployment
  ![GitHub Diff](doc/img/github-diff.png)
 2. Run your pipeline, Goff renders the Base and the Overlays and calculate the diff between the source and target branch.
 3. Check the auto generated comment in your Pull request and review the changes
  ![GitHub Diff](doc/img/goff-diff.png)
+
+### ArgoCD Application
+
+1. Create a new branch and commit your changes in your ArgoCd Application
+ ![GitHub Diff](doc/img/github-argo-diff.png)
+2. Run your pipeline, Goff renders the Appication into manifests calculate the diff between the source and target branch.
+3. Check the auto generated comment in your Pull request and review the changes
+ ![GitHub Diff](doc/img/goff-argo-diff.png)
+
 
 
 ## Usage

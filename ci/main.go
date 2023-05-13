@@ -42,7 +42,7 @@ func main() {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
-	goofContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/alpine-base").
+	goffContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/alpine-base").
 		WithFile("/bin/goff", goffBin).
 		WithFile("/bin/glab", glabBin).
 		WithEntrypoint([]string{"/bin/goff"})
@@ -54,11 +54,22 @@ func main() {
 		panic(fmt.Errorf("Env var REGISTRY_USER not set"))
 	}
 
-	addr, err := goofContainer.WithRegistryAuth("registry.puzzle.ch", regUser, secret).Publish(ctx, "registry.puzzle.ch/cicd/goff")
+	_, err = goffContainer.WithRegistryAuth("registry.puzzle.ch", regUser, secret).Publish(ctx, "registry.puzzle.ch/cicd/goff")
 	if err != nil {
 		panic(err)
 	}
 
-	// print ref
-	fmt.Println("Published at:", addr)
+	//Build repo server for GitHub actions becuase they don't yet support overriding the entrypoint
+	repoServerContainer := daggerClient.Container().From("quay.io/argoproj/argocd:latest").
+		WithUser("root").
+		WithExec([]string{"apt", "update"}).
+		WithExec([]string{"apt", "install", "netcat", "-y"}).
+		WithUser("argocd").
+		WithEntrypoint([]string{"argocd-repo-server"})
+
+	_, err = repoServerContainer.WithRegistryAuth("registry.puzzle.ch", regUser, secret).Publish(ctx, "registry.puzzle.ch/cicd/argocd-repo-server")
+	if err != nil {
+		panic(err)
+	}
+
 }

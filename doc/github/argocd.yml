@@ -2,7 +2,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths: 
-     - "kustomize/**"
+     - "argocd/**"
 
 permissions:
   contents: read
@@ -11,9 +11,19 @@ permissions:
 name: Diff GitOps Environments
 
 jobs:
-  diff-env-kustomize:
+  diff-env-argo:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    services:
+      reposerver:
+        image: registry.puzzle.ch/cicd/argocd-repo-server:latest
+        ports:
+          - "8081:8081"
+        options: >-
+          --health-cmd "nc -z localhost 8081"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     container:
       image: registry.puzzle.ch/cicd/goff:latest
     steps:
@@ -27,9 +37,9 @@ jobs:
           path: target
           ref: ${{ github.event.pull_request.base.ref }}
       - run: |
-         goff kustomize build ./source/kustomize --output-dir /tmp/source/out
-         goff kustomize build ./target/kustomize --output-dir /tmp/target/out
-         goff diff "/tmp/source" "/tmp/target" --title=Preview --output-dir .
+         goff argocd "./source/argocd" --repoServer="reposerver:8081" --output-dir=/tmp/source/
+         goff argocd "./target/argocd" --repoServer="reposerver:8081" --output-dir=/tmp/target/
+         goff diff "/tmp/source" "/tmp/target" --output-dir .
       - name: comment PR
         uses: machine-learning-apps/pr-comment@master
         env:

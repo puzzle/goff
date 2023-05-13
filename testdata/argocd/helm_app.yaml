@@ -4,17 +4,17 @@ metadata:
   name: goff-test
   namespace: openshift-gitops
 spec:
-  project: default
   destination:
-    server: https://kubernetes.default.svc
     namespace: pitc-cschlatter
+    server: 'https://kubernetes.default.svc'
+  project: default
   sources:
-  - repoURL: 'https://charts.bitnami.com/bitnami'
-    chart: redis
-    targetRevision: 17.10.1
-    helm:
-      valueFiles:
-      - $values/argocd/helm/redis.yaml
-  - repoURL: 'https://github.com/schlapzz/goff-examples.git'
-    targetRevision: main
-    ref: values
+    - chart: redis
+      helm:
+        valueFiles:
+          - $values/argocd/redis.yaml
+      repoURL: 'https://charts.bitnami.com/bitnami'
+      targetRevision: 16.11.2
+    - ref: values
+      repoURL: 'https://github.com/schlapzz/goff-github.git'
+      targetRevision: v1.2.7

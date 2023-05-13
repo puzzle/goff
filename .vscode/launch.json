@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["argocd", "./testdata/argocd/", "--output-dir=out/"]
+            "args": ["argocd", "./testdata/argocd/", "--repoServer=localhost:8081", "--output-dir=out/"]
         },
         {
             "name": "Kustomize build",
@@ -19,7 +19,7 @@
             "mode": "auto",
             "program": "main.go",
             "args": ["kustomize", "build", "./testdata/kustomize/source", "--output-dir=out/"]
-        },
+        },  
         {
             "name": "Kustomize diff",
             "type": "go",
