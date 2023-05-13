@@ -25,3 +25,4 @@ jobs:
         run: go run ci/main.go
         env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
+          REGISTRY_USER: '${{ secrets.REGISTRY_USER }}'

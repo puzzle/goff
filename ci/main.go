@@ -23,15 +23,19 @@ func main() {
 	})
 
 	// build application
+	goMod := daggerClient.CacheVolume("go")
 	golang := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
-		From("golang:1.20")
+		From("golang:1.20").
+		WithMountedCache("/go/src", goMod)
 
 	golang = golang.WithDirectory("/src", source).
 		WithWorkdir("/src").
 		WithExec([]string{"apt", "update"}).
 		WithExec([]string{"apt", "install", "musl-tools", "-y"}).
 		WithEnvVariable("CC", "musl-gcc").
+		WithExec([]string{"go", "install"}).
 		WithExec([]string{"mkdir", "-p", "/app"}).
+		WithExec([]string{"go", "test", "./...", "-v"}).
 		WithExec([]string{"go", "build", "-o", "/app/goff", "goff"}).
 		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"})
 
@@ -47,7 +51,7 @@ func main() {
 
 	regUser, ok := os.LookupEnv("REGISTRY_USER")
 	if !ok {
-		regUser = "cschlatter"
+		panic(fmt.Errorf("Env var REGISTRY_USER not set"))
 	}
 
 	addr, err := goofContainer.WithRegistryAuth("registry.puzzle.ch", regUser, secret).Publish(ctx, "registry.puzzle.ch/cicd/goff")
