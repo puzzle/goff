@@ -1,10 +1,19 @@
 GOFF
 ===
 
-Inspired from Kostis K... talk at the KubeCon about [How to Preview and Diff Your Argo CD Deployments](https://youtu.be/X392bJX0AEs) we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository, 
+Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to Preview and Diff Your Argo CD Deployments](https://youtu.be/X392bJX0AEs) we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository, 
+
+## How it works
 
 
-# Usage
+1. Create a new branch and commit your changes in your Kustomize deployment
+ ![GitHub Diff](doc/img/github-diff.png)
+2. Run your pipeline, Goff renders the Base and the Overlays and calculate the diff between the source and target branch.
+3. Check the auto generated comment in your Pull request and review the changes
+ ![GitHub Diff](doc/img/goff-diff.png)
+
+
+## Usage
 
 ```bash
 Helper tool to show changes between .....
