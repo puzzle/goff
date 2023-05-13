@@ -26,6 +26,16 @@ Flags:
 Use "goff [command] --help" for more information about a command.
 ```
 
+## Supported Tools
+
+| Tooling               | Support                                       |
+|-----------------------|----------------------------------------------|
+| Plain manifests       | ✅                                          |
+| Helm                  | ✅ Supported through plain manifests        |
+| Kustomize             | ✅                                          |
+| ArgoCD Application    | ✅ Needs the ArgoCD Repo Server             |
+| ArgoCD ApplicationSet |  🚧 Not yet supported                       |
+
 # Build binary from source
 ```bash
 go build -o goff goff 
