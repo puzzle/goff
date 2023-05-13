@@ -17,7 +17,7 @@ import (
 )
 
 func Render(dir, repoServerUrl, outputDir string) {
-	conn := apiclient.NewRepoServerClientset(repoServerUrl, 30, apiclient.TLSConfiguration{StrictValidation: false})
+	conn := apiclient.NewRepoServerClientset(repoServerUrl, 300, apiclient.TLSConfiguration{StrictValidation: false})
 	r, b, err := conn.NewRepoServerClient()
 	defer r.Close()
 
@@ -57,9 +57,23 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 	}
 
 	repoDB := &dbmocks.ArgoDB{}
-	repoDB.On("GetRepository", context.Background(), "https://github.com/schlapzz/goff-examples.git").Return(&v1alpha1.Repository{
-		Repo: "https://github.com/schlapzz/goff-examples.git",
-	}, nil)
+
+	if app.Spec.Source != nil {
+		repoDB.On("GetRepository", context.Background(), app.Spec.Source.RepoURL).Return(&v1alpha1.Repository{
+			Repo: app.Spec.Source.RepoURL,
+		}, nil)
+	}
+
+	if app.Spec.Sources != nil {
+		for i := range app.Spec.Sources {
+			repo := app.Spec.Sources[i].RepoURL
+			if repo != "" {
+				repoDB.On("GetRepository", context.Background(), repo).Return(&v1alpha1.Repository{
+					Repo: repo,
+				}, nil)
+			}
+		}
+	}
 
 	refSources, err := argo.GetRefSources(context.Background(), app.Spec, repoDB)
 	req := &apiclient.ManifestRequest{
