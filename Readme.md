@@ -1,7 +1,8 @@
 GOFF
 ===
 
-The GitOps Diff tool. Review your changes in deep.
+Inspired from Kostis K... talk at the KubeCon about [How to Preview and Diff Your Argo CD Deployments](https://youtu.be/X392bJX0AEs) we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository, 
+
 
 # Usage
 
@@ -33,7 +34,7 @@ Use "goff [command] --help" for more information about a command.
 | Plain manifests       | ✅                                          |
 | Helm                  | ✅ Supported through plain manifests        |
 | Kustomize             | ✅                                          |
-| ArgoCD Application    | ✅ Needs the ArgoCD Repo Server             |
+| ArgoCD Application    | ✅ Needs a local ArgoCD Repo server instance             |
 | ArgoCD ApplicationSet |  🚧 Not yet supported                       |
 
 # Build binary from source
