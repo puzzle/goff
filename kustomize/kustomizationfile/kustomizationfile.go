@@ -87,18 +87,18 @@ func contains(s []string, str string) bool {
 // GetFromDirectory attempts to read a kustomization.yaml file from the given directory
 func (k *kustomizationFileContext) GetFromDirectory(directoryPath string) (*KustomizationFile, error) {
 
-	dir, err := os.Stat(directoryPath)
+	var kustomizationFile KustomizationFile
+
+	fileUtility := &afero.Afero{Fs: k.fileSystem}
+
+	exists, err := fileUtility.DirExists(directoryPath)
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not state file %v", directoryPath)
 	}
 
-	if !dir.IsDir() {
+	if !exists {
 		return nil, nil
 	}
-
-	var kustomizationFile KustomizationFile
-
-	fileUtility := &afero.Afero{Fs: k.fileSystem}
 
 	fileFoundCount := 0
 	kustomizationFilePath := ""

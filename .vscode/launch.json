@@ -27,6 +27,13 @@
             "mode": "auto",
             "program": "main.go",
             "args": ["diff", "./testdata/kustomize/source", "./testdata/kustomize/target"]
+        },
+        {
+            "name": "Run tests",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${relativeFileDirname}",
         }
     ]
 }
