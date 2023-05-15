@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Split",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "main.go",
+            "args": ["split", "/home/schlatter/tmp/argo-apps/out/all.yaml", "--output-dir=out/split"]
+        },
+        {
             "name": "ArgoCD",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["argocd", "./testdata/argocd/", "--repoServer=localhost:8081", "--output-dir=out/"]
+            "args": ["argocd", "./out/split", "--repoServer=localhost:8081", "--output-dir=out/",  "-u", "argo", "-i", "/home/schlatter/.ssh/id_rsa"]
         },
         {
             "name": "Kustomize build",
