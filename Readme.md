@@ -1,11 +1,11 @@
-GOFF
-===
+# GOFF
 
-Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to Preview and Diff Your Argo CD Deployments](https://youtu.be/X392bJX0AEs) we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository, 
+Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to Preview and Diff Your Argo CD Deployments](https://youtu.be/X392bJX0AEs) we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository.
 
 ## How it works
 
 [Checkout the examples](doc/)
+
 ### Kustomize example
 
 1. Create a new branch and commit your changes in your Kustomize deployment
@@ -21,8 +21,6 @@ Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to 
 2. Run your pipeline, Goff renders the Appication into manifests calculate the diff between the source and target branch.
 3. Check the auto generated comment in your Pull request and review the changes
  ![GitHub Diff](doc/img/goff-argo-diff.png)
-
-
 
 ## Usage
 
@@ -57,13 +55,16 @@ Use "goff [command] --help" for more information about a command.
 | ArgoCD Application    | ✅ Needs a local ArgoCD Repo server instance             |
 | ArgoCD ApplicationSet |  🚧 Not yet supported                       |
 
-# Build binary from source
+## Build
+
+### Build binary from source
+
 ```bash
 go build -o goff goff 
 ```
 
+### Build Image with dagger
 
-# Build Image with dagger
 ```bash
 export REGISTRY_PASSWORD=....
 export REGISTRY_USER=....
@@ -71,6 +72,7 @@ go run ci/main.go
 ```
 
 If you wanna try the new fancy Dagger TUI
+
 ```bash
 export _EXPERIMENTAL_DAGGER_TUI=1
 export REGISTRY_PASSWORD=....
