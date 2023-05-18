@@ -32,7 +32,9 @@ func BuildAll(sourceDir, targetDir string) {
 			continue
 		}
 
-		base := strings.TrimPrefix(dir, sourceDir)
+		ad, _ := filepath.Abs(dir)
+		asd, _ := filepath.Abs(sourceDir)
+		base := strings.TrimPrefix(ad, asd)
 		outPath := filepath.Join(targetDir, base)
 
 		err = os.MkdirAll(outPath, 0777)

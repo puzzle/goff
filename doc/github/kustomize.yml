@@ -1,0 +1,38 @@
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths: 
+     - "kustomize/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+name: Diff GitOps Environments
+
+jobs:
+  diff-env-kustomize:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container:
+      image: registry.puzzle.ch/cicd/goff:latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v3
+        with:
+         path: source
+      - name: Checkout Target of PR
+        uses: actions/checkout@v3
+        with:
+          path: target
+          ref: ${{ github.event.pull_request.base.ref }}
+      - run: |
+         goff kustomize build ./source/kustomize --output-dir /tmp/source/out
+         goff kustomize build ./target/kustomize --output-dir /tmp/target/out
+         goff diff "/tmp/source" "/tmp/target" --title=Preview --output-dir .
+      - name: comment PR
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: diff.md
