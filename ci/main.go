@@ -3,20 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"dagger.io/dagger"
-	"github.com/google/go-github/v52/github"
-	"golang.org/x/oauth2"
 )
 
 func main() {
 
-	ReleaseOnGitHub("v0.1.0")
-	return
 	// create Dagger client
 	ctx := context.Background()
 	daggerClient, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
@@ -32,7 +26,7 @@ func main() {
 
 	// get working directory on host
 	source := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
-		Exclude: []string{"ci"},
+		Exclude: []string{"ci/", "build/"},
 	})
 
 	// build application
@@ -94,16 +88,18 @@ func main() {
 	refName := os.Getenv("GITHUB_REF_NAME")
 
 	if refType == "tag" && strings.HasPrefix(refName, "v") {
-		buildAndRelease(golang, refName)
+		buildAndRelease(daggerClient, golang, refName)
 	}
 }
 
-func buildAndRelease(golang *dagger.Container, version string) {
+func buildAndRelease(client *dagger.Client, golang *dagger.Container, version string) {
 
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
 	targets["windows"] = []string{"amd64", "386"}
 	targets["darwin"] = []string{"amd64"}
+
+	files := make([]string, 0)
 
 	for os, target := range targets {
 		for i := range target {
@@ -113,56 +109,35 @@ func buildAndRelease(golang *dagger.Container, version string) {
 				WithEnvVariable("GOOS", os).
 				WithEnvVariable("GOARCH", arch).
 				WithExec([]string{"go", "build", "-o", outFile, "goff"})
+			files = append(files, outFile)
 		}
 	}
-
-	_, err := golang.Directory("build/").Export(context.Background(), "./build")
-	if err != nil {
-		panic(err)
-	}
-}
-
-func ReleaseOnGitHub(tag string) {
 
 	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
 	if accessToken == "" {
 		panic("GITHUB_ACCESS_TOKEN env var is missing")
 	}
 
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: accessToken},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	client := github.NewClient(tc)
-	releaseName := fmt.Sprintf("GOFF %s", tag)
-
-	release := &github.RepositoryRelease{
-		TagName: &tag,
-		Name:    &releaseName,
-	}
-
-	_, _, err := client.Repositories.CreateRelease(ctx, "schlapzz", "goff", release)
-
-	files, err := ioutil.ReadDir("build/")
+	_, err := golang.Directory("build/").Export(context.Background(), "./build")
 	if err != nil {
 		panic(err)
 	}
 
+	ghContainer := client.Container().From("ghcr.io/supportpal/github-gh-cli").
+		WithEnvVariable("GITHUB_TOKEN", accessToken).
+		WithDirectory("/build", golang.Directory("build/")).
+		WithExec([]string{"gh", "release", "create", version})
+
 	for _, f := range files {
-		fmt.Println("upload file: " + f.Name())
-		file, err := os.Open(filepath.Join("build/", f.Name()))
-		if err != nil {
-			panic(err)
-		}
-		_, _, err = client.Repositories.UploadReleaseAsset(ctx, "schlapzz", "goff", 0, &github.UploadOptions{
-			Name:  f.Name(),
-			Label: "release",
-		}, file)
-		if err != nil {
-			panic(err)
-		}
+		ghContainer = ghContainer.
+			WithExec([]string{"gh", "-R", "schlapzz/goff", "release", "upload", version, f})
 	}
 
+	//Evaluate
+	exit, err := ghContainer.ExitCode(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("exit code " + fmt.Sprintf("%d", exit))
 }
