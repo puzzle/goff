@@ -1,7 +1,6 @@
 package kustomizationgraph
 
 import (
-	"goff/diff"
 	"goff/kustomize/kustomizationfile"
 	"os"
 	"path"
@@ -45,32 +44,6 @@ func New(graphName string) *kustomizationGraph {
 	}
 
 	return graph
-}
-
-func (g *kustomizationGraph) GenerateDiff(sourceDir, targetDir string) (string, error) {
-	diffs := diff.CreateDiffs(sourceDir, targetDir)
-
-	kustomizationFileContext := kustomizationfile.New()
-	kustomizeDirs, err := kustomizationFileContext.GetDirectories(sourceDir)
-	if err != nil {
-		return "", errors.Wrapf(err, "Could not get directories from directory %s", sourceDir)
-	}
-
-	for _, dir := range kustomizeDirs {
-
-		err = g.buildGraph(kustomizationFileContext, dir, "")
-		if err != nil {
-			return "", errors.Wrapf(err, "Could not produce graph from directory %s", dir)
-		}
-	}
-
-	for i := range g.Nodes.Nodes {
-		n := g.Nodes.Nodes[i]
-
-		n.Attrs.Add("color", "red")
-	}
-
-	return g.String(), nil
 }
 
 // Generate returns a DOT graph based on the dependencies
