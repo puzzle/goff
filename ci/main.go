@@ -72,7 +72,7 @@ func main() {
 		WithEntrypoint([]string{"/bin/goff"})
 
 		//Push into registry
-	_, err = goffContainer.WithRegistryAuth("registry.puzzle.ch", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
+	_, err = goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
 	if err != nil {
 		panic(err)
 	}
