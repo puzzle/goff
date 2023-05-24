@@ -3,7 +3,7 @@ stages:          # List of stages for jobs, and their order of execution
 
 create_comment_helm:
     stage: merge
-    image: registry.puzzle.ch/cicd/goff:latest
+    image: quay.io/puzzle/goff:latest
     script:
      - echo "Target branch $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
      - git clone -b $CI_MERGE_REQUEST_TARGET_BRANCH_NAME --single-branch $CI_REPOSITORY_URL /tmp/checkout/target
@@ -21,7 +21,7 @@ create_comment_helm:
      
 create_comment_kustomize:
     stage: merge
-    image: registry.puzzle.ch/cicd/goff:latest
+    image: quay.io/puzzle/goff:latest
     script:
      - echo summy
      - echo "Target branch $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
@@ -48,7 +48,7 @@ create_comment_argo:
         entrypoint:
           - "/usr/local/bin/argocd-repo-server"
     stage: merge
-    image: registry.puzzle.ch/cicd/goff:latest
+    image: quay.io/puzzle/goff:latest
     script:
      - echo "Target branch $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
      - git clone -b $CI_MERGE_REQUEST_TARGET_BRANCH_NAME --single-branch $CI_REPOSITORY_URL /tmp/checkout/target

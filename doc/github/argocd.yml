@@ -25,7 +25,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     container:
-      image: registry.puzzle.ch/cicd/goff:latest
+      image: quay.io/puzzle/goff:latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3

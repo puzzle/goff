@@ -15,7 +15,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
-      image: registry.puzzle.ch/cicd/goff:latest
+      image: quay.io/puzzle/goff:latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
