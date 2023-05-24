@@ -66,7 +66,7 @@ func main() {
 	glabBin := golang.File("/go/bin/glab")
 
 	//Add GOFF and Gitlab CLI to our standard build container
-	goffContainer := daggerClient.Container().From("registry.puzzle.ch/cicd/alpine-base").
+	goffContainer := daggerClient.Container().From("docker.io/alpine:3.18").
 		WithFile("/bin/goff", goffBin).
 		WithFile("/bin/glab", glabBin).
 		WithEntrypoint([]string{"/bin/goff"})
@@ -102,7 +102,7 @@ func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagge
 		WithUser("argocd").
 		WithEntrypoint([]string{"argocd-repo-server"})
 
-	_, err := repoServerContainer.WithRegistryAuth("registry.puzzle.ch", regUser, regSecret).Publish(ctx, "registry.puzzle.ch/cicd/argocd-repo-server")
+	_, err := repoServerContainer.WithRegistryAuth("quay.io", regUser, regSecret).Publish(ctx, "quay.io/puzzle/argocd-repo-server")
 	if err != nil {
 		panic(err)
 	}

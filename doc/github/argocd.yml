@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       reposerver:
-        image: registry.puzzle.ch/cicd/argocd-repo-server:latest
+        image: quay.io/puzzle/argocd-repo-server:latest
         ports:
           - "8081:8081"
         options: >-
