@@ -27,16 +27,6 @@ func main() {
 		panic(fmt.Errorf("Env var REGISTRY_USER not set"))
 	}
 
-	// get working directory on host
-	modDir := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
-		Include: []string{"go.mod", "go.sum"},
-	})
-
-	// get working directory on host
-	source := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
-		Exclude: []string{"ci/", "build/"},
-	})
-
 	// create golang base
 	goMod := daggerClient.CacheVolume("go")
 	base := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
@@ -49,9 +39,19 @@ func main() {
 		WithExec([]string{"apt", "update"}).
 		WithExec([]string{"apt", "install", "musl-tools", "-y"})
 
+	// get working directory on host
+	modDir := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
+		Include: []string{"go.mod", "go.sum"},
+	})
+
 	//download go modules
 	golang := base.WithDirectory("/src", modDir).
 		WithExec([]string{"go", "mod", "download"})
+
+	// get working directory on host
+	source := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
+		Exclude: []string{"ci/", "build/"},
+	})
 
 	//test and build
 	golang = golang.
@@ -85,8 +85,10 @@ func main() {
 		buildAndRelease(daggerClient, golang, refName)
 	}
 
-	//Build patched ArgoCD Repo server
-	buildArgoCdRepoServer(ctx, regUser, secret, daggerClient)
+	if refName == "main" {
+		//Build patched ArgoCD Repo server
+		buildArgoCdRepoServer(ctx, regUser, secret, daggerClient)
+	}
 
 }
 
@@ -123,6 +125,7 @@ func buildAndRelease(client *dagger.Client, golang *dagger.Container, version st
 			golang = golang.
 				WithEnvVariable("GOOS", os).
 				WithEnvVariable("GOARCH", arch).
+				WithEnvVariable("CC", "").
 				WithExec([]string{"go", "build", "-o", outFile, "goff"})
 			files = append(files, outFile)
 		}
@@ -149,10 +152,8 @@ func buildAndRelease(client *dagger.Client, golang *dagger.Container, version st
 	}
 
 	//Evaluate
-	exit, err := ghContainer.ExitCode(context.Background())
+	_, err = ghContainer.Sync(context.Background())
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("exit code 2 " + fmt.Sprintf("%d", exit))
 }

@@ -8,6 +8,16 @@ Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to 
 
 ### Kustomize example
 
+Example for Kustomization diff
+```bash
+#Build base and all overlays from source branch
+goff kustomize build ./source/kustomize --output-dir /tmp/source/out
+#Build base and all overlays from target branch
+goff kustomize build ./target/kustomize --output-dir /tmp/target/out
+#Diff rendered manifests
+goff diff "/tmp/source" "/tmp/target" --title=Preview --output-dir .
+```
+
 1. Create a new branch and commit your changes in your Kustomize deployment
  ![GitHub Diff](doc/img/github-diff.png)
 2. Run your pipeline, Goff renders the Base and the Overlays and calculate the diff between the source and target branch.
@@ -15,6 +25,16 @@ Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to 
  ![GitHub Diff](doc/img/goff-diff.png)
 
 ### ArgoCD Application
+
+Example for ArgoCD Application diff
+```bash
+#Render all ArgoCD manifests in directory from source branch
+goff argocd "./source/argocd" --repoServer="reposerver:8081" --output-dir=/tmp/source/
+#Render all ArgoCD manifests in directory from target branch
+goff argocd "./target/argocd" --repoServer="reposerver:8081" --output-dir=/tmp/target/
+#Diff rendered Kubernetes manifests
+goff diff "/tmp/source" "/tmp/target" --output-dir .
+```
 
 1. Create a new branch and commit your changes in your ArgoCd Application
  ![GitHub Diff](doc/img/github-argo-diff.png)

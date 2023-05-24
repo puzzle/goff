@@ -16,7 +16,7 @@ var outputDotDir *string
 // kustomizeCmd represents the kustomize command
 var kustomizeCmd = &cobra.Command{
 	Use:   "kustomize [rootDir]",
-	Short: "Generate a DOT file to visualize the dependencies betw",
+	Short: "Generate a DOT file to visualize the dependencies between your kustomize components",
 	Args:  cobra.ExactArgs(1),
 	Long:  `Generate a DOT file to visualize the dependencies between your kustomize components`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -28,14 +28,5 @@ func init() {
 	kustomizeCmd.AddCommand(kustomize.KustomizeBuildCmd)
 	rootCmd.AddCommand(kustomizeCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// kustomizeCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// kustomizeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	outputDotDir = kustomizeCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
 }

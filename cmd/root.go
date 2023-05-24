@@ -7,8 +7,11 @@ package cmd
 import (
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
+
+var logLevel *string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -23,7 +26,13 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
+	level, err := log.ParseLevel(*logLevel)
+	if err != nil {
+		panic(err)
+	}
+
+	log.SetLevel(level)
+	err = rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
@@ -39,4 +48,5 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	logLevel = rootCmd.PersistentFlags().StringP("logLevel", "l", "error", "Set loglevel [debug, info, error]")
 }

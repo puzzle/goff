@@ -17,7 +17,7 @@ var splitCmd = &cobra.Command{
 	Use:   "split",
 	Short: "Split manifests [manifestFile]",
 	Args:  cobra.ExactArgs(1),
-	Long:  `Split multi document yaml`,
+	Long:  `Split multi document yaml into single files`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := util.SplitManifests(args[0], *outputSplitDir)
 		if err != nil {

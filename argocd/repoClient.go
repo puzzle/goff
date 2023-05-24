@@ -15,6 +15,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/util/argo"
 	dbmocks "github.com/argoproj/argo-cd/v2/util/db/mocks"
 	"github.com/ghodss/yaml"
+	log "github.com/sirupsen/logrus"
 )
 
 type RepoCredentails struct {
@@ -39,11 +40,11 @@ func Render(dir, repoServerUrl, outputDir string, creds RepoCredentails) {
 	}
 
 	for _, file := range files {
+		log.Debugf("processing ArgoCD Application at: %s", file)
 		err = renderFile(file, repoServerUrl, outputDir, client, creds)
 		if err != nil {
-			fmt.Println(err)
+			log.Errorf("could not render argoCD Application: %v", err)
 		}
-		//TODO log errors
 	}
 
 }
@@ -181,6 +182,6 @@ func findArgoApps(rootDir string) ([]string, error) {
 		}
 		return nil
 	})
-
+	log.Debugf("Found %d ArgoCD Applications to process", len(argoAppFiles))
 	return argoAppFiles, err
 }

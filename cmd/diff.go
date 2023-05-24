@@ -23,9 +23,6 @@ var diffCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		diff.Diff(*title, *markdown, args[0], args[1], *outputDir)
 	},
-	PreRun: func(cmd *cobra.Command, args []string) {
-
-	},
 }
 
 func init() {

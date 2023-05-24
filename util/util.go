@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/ghodss/yaml"
+	log "github.com/sirupsen/logrus"
 )
 
 //Multi doc yaml, split and save
@@ -42,7 +43,8 @@ func SplitManifests(manifestFile, outDir string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("wrote file at: " + filename)
+
+		log.Debugf("wrote file at: %s", filename)
 	}
 
 	return nil
