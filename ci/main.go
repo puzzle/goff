@@ -59,7 +59,7 @@ func main() {
 		WithExec([]string{"mkdir", "-p", "/app"}).
 		WithEnvVariable("CC", "musl-gcc").
 		WithExec([]string{"go", "test", "./...", "-v"}).
-		WithExec([]string{"go", "build", "-o", "/app/goff", "goff"}).
+		WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
 		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}) //download gitlab cli
 
 	goffBin := golang.File("/app/goff")
