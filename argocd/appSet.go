@@ -9,6 +9,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/applicationset/utils"
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ghodss/yaml"
+	"google.golang.org/appengine/log"
 )
 
 func RenderApplicationSet(appSetFile, outDir string) {
@@ -80,7 +81,7 @@ func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedG
 		t, err := generators.Transform(requestedGenerator, supportedGenerators, applicationSetInfo.Spec.Template, &applicationSetInfo, map[string]interface{}{})
 		if err != nil {
 
-			fmt.Println("error generating application from params")
+			log.Errorf("error generating application from params")
 			if firstError == nil {
 				firstError = err
 				applicationSetReason = v1alpha1.ApplicationSetReasonApplicationParamsGenerationError
@@ -95,7 +96,7 @@ func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedG
 				app, err := renderer.RenderTemplateParams(tmplApplication, applicationSetInfo.Spec.SyncPolicy, p, applicationSetInfo.Spec.GoTemplate)
 
 				if err != nil {
-					fmt.Println("error generating application from params")
+					log.Errorf("error generating application from params")
 
 					if firstError == nil {
 						firstError = err
