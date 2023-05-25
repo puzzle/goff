@@ -18,10 +18,7 @@ var logLevel *string
 var rootCmd = &cobra.Command{
 	Use:   "goff",
 	Short: "GitOps Diff Tool",
-	Long:  `Helper tool to show changes between .....`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Long:  `GitOps Diff Tool`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -43,6 +40,5 @@ func init() {
 
 	rootCmd.AddCommand(argocd.ArgocdCmd)
 
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	logLevel = rootCmd.PersistentFlags().StringP("logLevel", "l", "error", "Set loglevel [debug, info, error]")
 }

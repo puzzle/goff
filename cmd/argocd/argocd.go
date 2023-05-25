@@ -18,10 +18,10 @@ var RepoSshKey *string
 // argocdCmd represents the argocd command
 var ArgocdCmd = &cobra.Command{
 	Use:   "argocd",
-	Short: "Render manifests from ArgoCD",
-	Long:  `Render manifests from ArgoCD`,
+	Short: "Render manifests from ArgoCD resources",
+	Long:  `Render manifests from ArgoCD resources`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("specify one subcommand")
+		fmt.Println("specify one subcommand [app|appSet]")
 	},
 }
 

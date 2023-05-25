@@ -9,7 +9,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/applicationset/utils"
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ghodss/yaml"
-	"google.golang.org/appengine/log"
+	log "github.com/sirupsen/logrus"
 )
 
 func RenderApplicationSet(appSetFile, outDir string) {
