@@ -5,8 +5,8 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"goff/cmd/kustomize"
-	"goff/kustomize/kustomizationgraph"
+	"github.com/puzzle/goff/cmd/kustomize"
+	"github.com/puzzle/goff/kustomize/kustomizationgraph"
 
 	"github.com/spf13/cobra"
 )

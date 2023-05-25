@@ -5,7 +5,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"goff/argocd"
+	"github.com/puzzle/goff/argocd"
 
 	"github.com/spf13/cobra"
 )

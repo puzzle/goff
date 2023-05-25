@@ -2,11 +2,13 @@ package kustomize
 
 import (
 	"bytes"
-	"goff/kustomize/kustomizationfile"
-	"goff/util"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/puzzle/goff/util"
+
+	"github.com/puzzle/goff/kustomize/kustomizationfile"
 
 	"sigs.k8s.io/kustomize/api/filesys"
 	"sigs.k8s.io/kustomize/kustomize/v4/commands/build"

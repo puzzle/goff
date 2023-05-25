@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"goff/util"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/puzzle/goff/util"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/argoproj/argo-cd/v2/reposerver/apiclient"

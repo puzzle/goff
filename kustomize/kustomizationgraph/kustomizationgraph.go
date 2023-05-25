@@ -1,11 +1,12 @@
 package kustomizationgraph
 
 import (
-	"goff/kustomize/kustomizationfile"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/puzzle/goff/kustomize/kustomizationfile"
 
 	"github.com/awalterschulze/gographviz"
 	"github.com/pkg/errors"

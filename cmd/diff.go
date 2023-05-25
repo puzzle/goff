@@ -5,7 +5,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"goff/diff"
+	"github.com/puzzle/goff/diff"
 
 	"github.com/spf13/cobra"
 )
