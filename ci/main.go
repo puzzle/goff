@@ -69,9 +69,11 @@ func main() {
 	goffContainer := daggerClient.Container().From("docker.io/alpine:3.18").
 		WithFile("/bin/goff", goffBin).
 		WithFile("/bin/glab", glabBin).
-		WithEntrypoint([]string{"/bin/goff"})
+		WithExec([]string{"apk", "add", "git", "helm"})
 
-		//Push into registry
+	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
+
+	//Push into registry
 	_, err = goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
 	if err != nil {
 		panic(err)
