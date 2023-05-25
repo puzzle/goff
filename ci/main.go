@@ -62,25 +62,20 @@ func main() {
 		WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
 		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}) //download gitlab cli
 
-	goffBin := golang.File("/app/goff")
-	glabBin := golang.File("/go/bin/glab")
-
-	//Add GOFF and Gitlab CLI to our standard build container
-	goffContainer := daggerClient.Container().From("docker.io/alpine:3.18").
-		WithFile("/bin/goff", goffBin).
-		WithFile("/bin/glab", glabBin).
-		WithExec([]string{"apk", "add", "git", "helm"})
-
-	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
-
-	//Push into registry
-	_, err = goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
-	if err != nil {
-		panic(err)
-	}
-
 	refType := os.Getenv("GITHUB_REF_TYPE")
 	refName := os.Getenv("GITHUB_REF_NAME")
+
+	//Add GOFF and Gitlab CLI to our standard build container
+	//Push into registry
+	if refName == "main" {
+		publishImage(golang, daggerClient, regUser, secret, ctx)
+	} else {
+		//Lazy eval
+		_, err = golang.Sync(ctx)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	//If version tag, build binary releases and release them on github
 	if refType == "tag" && strings.HasPrefix(refName, "v") {
@@ -92,6 +87,23 @@ func main() {
 		buildArgoCdRepoServer(ctx, regUser, secret, daggerClient)
 	}
 
+}
+
+func publishImage(golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret, ctx context.Context) {
+	goffBin := golang.File("/app/goff")
+	glabBin := golang.File("/go/bin/glab")
+
+	goffContainer := daggerClient.Container().From("docker.io/alpine:3.18").
+		WithFile("/bin/goff", goffBin).
+		WithFile("/bin/glab", glabBin).
+		WithExec([]string{"apk", "add", "git", "helm"})
+
+	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
+
+	_, err := goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
+	if err != nil {
+		panic(err)
+	}
 }
 
 //Build repo server for GitHub actions becuase they don't yet support overriding the entrypoint
