@@ -3,7 +3,7 @@ package kustomizationgraph
 import (
 	"testing"
 
-	"goff/kustomize/kustomizationfile"
+	"github.com/puzzle/goff/kustomize/kustomizationfile"
 
 	"github.com/spf13/afero"
 )

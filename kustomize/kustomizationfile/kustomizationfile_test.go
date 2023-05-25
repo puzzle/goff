@@ -60,8 +60,15 @@ func TestGetFromDirectory(t *testing.T) {
 resources:
 - a.yaml
 `
-	afero.WriteFile(fakeFileSystem, "app/kustomization.yaml", []byte(fileContents), 0644)
-	kustomizationFile, _ := NewFromFileSystem(fakeFileSystem).GetFromDirectory("app")
+	err := afero.WriteFile(fakeFileSystem, "app/kustomization.yaml", []byte(fileContents), 0644)
+	if err != nil {
+		t.Errorf("could not create fake filesystem for kustomization files: %s", err.Error())
+	}
+
+	kustomizationFile, err := NewFromFileSystem(fakeFileSystem).GetFromDirectory("app")
+	if err != nil {
+		t.Errorf("could not create kustomization files from app dir: %s", err.Error())
+	}
 
 	expected := "a.yaml"
 	actual := kustomizationFile.Resources[0]

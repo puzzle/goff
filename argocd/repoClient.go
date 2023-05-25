@@ -3,22 +3,31 @@ package argocd
 import (
 	"context"
 	"encoding/json"
-	"goff/util"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/puzzle/goff/util"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/argoproj/argo-cd/v2/reposerver/apiclient"
 	"github.com/argoproj/argo-cd/v2/util/argo"
 	dbmocks "github.com/argoproj/argo-cd/v2/util/db/mocks"
 	"github.com/ghodss/yaml"
+	log "github.com/sirupsen/logrus"
 )
 
-func Render(dir, repoServerUrl, outputDir string) {
-	conn := apiclient.NewRepoServerClientset(repoServerUrl, 30, apiclient.TLSConfiguration{StrictValidation: false})
-	r, b, err := conn.NewRepoServerClient()
+type RepoCredentails struct {
+	Username string
+	Password string
+	KeyFile  string
+}
+
+func Render(dir, repoServerUrl, outputDir string, creds RepoCredentails) {
+	conn := apiclient.NewRepoServerClientset(repoServerUrl, 600, apiclient.TLSConfiguration{StrictValidation: false})
+	r, client, err := conn.NewRepoServerClient()
 	defer r.Close()
 
 	if err != nil {
@@ -32,79 +41,124 @@ func Render(dir, repoServerUrl, outputDir string) {
 	}
 
 	for _, file := range files {
-		renderFile(file, repoServerUrl, outputDir, b)
+		log.Debugf("processing ArgoCD Application at: %s", file)
+		err = renderFile(file, repoServerUrl, outputDir, client, creds)
+		if err != nil {
+			log.Errorf("could not render argoCD Application: %v", err)
+		}
 	}
 
 }
 
-func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServerServiceClient) {
+func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServerServiceClient, creds RepoCredentails) error {
 
 	data, err := os.ReadFile(file)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	data, err = yaml.YAMLToJSON(data)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	app := &v1alpha1.Application{}
 
 	err = json.Unmarshal(data, app)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	repoDB := &dbmocks.ArgoDB{}
-	repoDB.On("GetRepository", context.Background(), "https://github.com/schlapzz/goff-examples.git").Return(&v1alpha1.Repository{
-		Repo: "https://github.com/schlapzz/goff-examples.git",
-	}, nil)
+	source := v1alpha1.ApplicationSource{}
+
+	var privateKey string
+	if creds.KeyFile != "" {
+		data, err := os.ReadFile(creds.KeyFile)
+		if err != nil {
+			return err
+		}
+		privateKey = string(data)
+	}
+
+	if app.Spec.Source != nil {
+		repoDB.On("GetRepository", context.Background(), app.Spec.Source.RepoURL).Return(&v1alpha1.Repository{
+			Repo:               app.Spec.Source.RepoURL,
+			SSHPrivateKey:      privateKey,
+			Username:           creds.Username,
+			Password:           creds.Password,
+			ForceHttpBasicAuth: true,
+		}, nil)
+		source = *app.Spec.Source
+	}
+
+	if app.Spec.Sources != nil {
+		for i := range app.Spec.Sources {
+			source = app.Spec.Sources[i]
+			repo := app.Spec.Sources[i].RepoURL
+			if repo != "" {
+				repoDB.On("GetRepository", context.Background(), repo).Return(&v1alpha1.Repository{
+					Repo:               repo,
+					SSHPrivateKey:      privateKey,
+					Username:           creds.Username,
+					Password:           creds.Password,
+					ForceHttpBasicAuth: true,
+				}, nil)
+			}
+		}
+	}
 
 	refSources, err := argo.GetRefSources(context.Background(), app.Spec, repoDB)
 	req := &apiclient.ManifestRequest{
-		ApplicationSource:  &app.Spec.Sources[0],
+		ApplicationSource:  &source,
 		AppName:            "goff-test",
 		NoCache:            true,
 		RefSources:         refSources,
 		HasMultipleSources: true,
-		Revision:           app.Spec.Sources[0].TargetRevision,
+		Revision:           source.TargetRevision,
+		KustomizeOptions: &v1alpha1.KustomizeOptions{
+			BuildOptions: "--enable-helm",
+		},
 		Repo: &v1alpha1.Repository{
-			Repo: app.Spec.Sources[0].RepoURL,
+			Repo:               source.RepoURL,
+			SSHPrivateKey:      privateKey,
+			Username:           creds.Username,
+			Password:           creds.Password,
+			ForceHttpBasicAuth: true,
 		},
 	}
 
 	resp, err := client.GenerateManifest(context.Background(), req)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not process application '%s': %w", app.Name, err)
 	}
 
 	err = os.MkdirAll(outputDir, 0777)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	for _, manifest := range resp.Manifests {
 
 		fileName, err := util.FileNameFromManifest(manifest)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		outputFile := filepath.Join(outputDir, fileName)
 
 		yamlManifest, err := yaml.JSONToYAML([]byte(manifest))
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		err = os.WriteFile(outputFile, yamlManifest, 0777)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 	}
-
+	return nil
 }
 
 func findArgoApps(rootDir string) ([]string, error) {
@@ -129,6 +183,6 @@ func findArgoApps(rootDir string) ([]string, error) {
 		}
 		return nil
 	})
-
+	log.Debugf("Found %d ArgoCD Applications to process", len(argoAppFiles))
 	return argoAppFiles, err
 }

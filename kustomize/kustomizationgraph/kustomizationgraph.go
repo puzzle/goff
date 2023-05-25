@@ -1,15 +1,14 @@
 package kustomizationgraph
 
 import (
-	"goff/kustomize/kustomizationfile"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/puzzle/goff/kustomize/kustomizationfile"
+
 	"github.com/awalterschulze/gographviz"
-	viz "github.com/goccy/go-graphviz"
 	"github.com/pkg/errors"
 )
 
@@ -22,7 +21,7 @@ func Graph(rootDir, outpurDir string) {
 	f := filepath.Join(outpurDir, "graph.dot")
 	os.WriteFile(f, []byte(graph), 0777)
 
-	renderGraph(f, ".")
+	//renderGraph(f, ".")
 }
 
 type kustomizationGraph struct {
@@ -167,21 +166,4 @@ func sanitizePathForDot(path string) string {
 	path = filepath.ToSlash(path)
 
 	return path
-}
-
-func renderGraph(srcFile, outDir string) error {
-
-	b, err := ioutil.ReadFile(srcFile)
-	if err != nil {
-		return err
-	}
-	graph, err := viz.ParseBytes(b)
-
-	g := viz.New()
-
-	f := filepath.Join(outDir, "graph.png")
-	g = g.SetLayout(viz.CIRCO)
-	err = g.RenderFilename(graph, viz.PNG, f)
-
-	return err
 }

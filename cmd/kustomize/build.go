@@ -1,7 +1,7 @@
 package kustomize
 
 import (
-	"goff/kustomize"
+	"github.com/puzzle/goff/kustomize"
 
 	"github.com/spf13/cobra"
 )
