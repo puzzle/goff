@@ -20,14 +20,37 @@ require (
 
 require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	code.gitea.io/sdk/gitea v0.15.1 // indirect
 	github.com/Khan/genqlient v0.5.0 // indirect
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
 	github.com/adrg/xdg v0.4.0 // indirect
+	github.com/gfleury/go-bitbucket-v1 v0.0.0-20220301131131-8e7ed04b843e // indirect
+	github.com/google/go-github/v35 v35.3.0 // indirect
+	github.com/gosimple/slug v1.13.1 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
+	github.com/hashicorp/go-version v1.2.1 // indirect
+	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
+	github.com/jeremywohl/flatten v1.0.1 // indirect
+	github.com/ktrysmt/go-bitbucket v0.9.55 // indirect
+	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b5 // indirect
+	github.com/mitchellh/copystructure v1.0.0 // indirect
+	github.com/mitchellh/mapstructure v1.4.3 // indirect
+	github.com/mitchellh/reflectwalk v1.0.0 // indirect
+	github.com/shopspring/decimal v1.2.0 // indirect
+	github.com/spf13/cast v1.4.1 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.1 // indirect
+	github.com/xanzy/go-gitlab v0.60.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 	k8s.io/api v0.24.2 // indirect
 	k8s.io/kubernetes v1.24.2 // indirect
+	sigs.k8s.io/controller-runtime v0.11.0 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.13.7 // indirect
 )
 

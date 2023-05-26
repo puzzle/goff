@@ -45,22 +45,22 @@ goff diff "/tmp/source" "/tmp/target" --output-dir .
 ## Usage
 
 ```bash
-Helper tool to show changes between .....
+GitOps Diff Tool
 
 Usage:
   goff [command]
 
 Available Commands:
-  argocd      Render manifests from ArgoCD Application
+  argocd      Render manifests from ArgoCD resources
   completion  Generate the autocompletion script for the specified shell
   diff        Diff files [sourceDir] [targetDir]
   help        Help about any command
-  kustomize   Generate a DOT file to visualize the dependencies betw
+  kustomize   Generate a DOT file to visualize the dependencies between your kustomize components
+  split       Split manifests [manifestFile]
 
 Flags:
-  -h, --help     help for goff
-  
-  -t, --toggle   Help message for toggle
+  -h, --help              help for goff
+  -l, --logLevel string   Set loglevel [debug, info, error] (default "error")
 
 Use "goff [command] --help" for more information about a command.
 ```
