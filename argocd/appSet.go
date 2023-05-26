@@ -12,23 +12,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func RenderApplicationSet(appSetFile, outDir string) {
+func RenderApplicationSet(appSetFile, outDir string) error {
 
 	appSet := &v1alpha1.ApplicationSet{}
 
 	data, err := os.ReadFile(appSetFile)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not read ApplicationSet: %w", err)
 	}
 
 	data, err = yaml.YAMLToJSON(data)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not convert ApplicationSet to YAML: %w", err)
 	}
 
 	err = yaml.Unmarshal(data, appSet)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not unmarshall ApplicationSet: %w", err)
 	}
 
 	listGen := generators.NewListGenerator()
@@ -39,9 +39,9 @@ func RenderApplicationSet(appSetFile, outDir string) {
 
 	err = writeApplications(apps, outDir)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not wirte Applications: %w", err)
 	}
-
+	return nil
 }
 
 func writeApplications(apps []v1alpha1.Application, ouputDir string) error {
