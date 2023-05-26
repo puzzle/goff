@@ -52,6 +52,11 @@ func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
 		panic(err)
 	}
 
+	if len(diffs) < 1 {
+		os.WriteFile(path, []byte("### ⚠️ No Changes detected!"), 0777)
+		return
+	}
+
 	err = template.Execute(f, d)
 	if err != nil {
 		panic(err)
