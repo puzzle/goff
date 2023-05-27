@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"dagger.io/dagger"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -54,13 +55,33 @@ func main() {
 	})
 
 	//test and build
-	golang = golang.
-		WithDirectory("/src", source).
-		WithExec([]string{"mkdir", "-p", "/app"}).
-		WithEnvVariable("CC", "musl-gcc").
-		WithExec([]string{"go", "test", "./...", "-v"}).
-		WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
-		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}) //download gitlab cli
+	golang = golang.WithDirectory("/src", source)
+
+	errGroup, ctx := errgroup.WithContext(ctx)
+
+	errGroup.Go(func() error {
+		_, err := golang.
+			WithExec([]string{"go", "test", "./...", "-v"}).
+			Sync(ctx)
+		return err
+	})
+
+	errGroup.Go(func() error {
+		golang, err = golang.
+			WithExec([]string{"mkdir", "-p", "/app"}).
+			WithEnvVariable("CC", "musl-gcc").
+			WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
+			WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}).
+			Sync(ctx)
+
+		return err
+
+	})
+
+	err = errGroup.Wait()
+	if err != nil {
+		panic(err)
+	}
 
 	refType := os.Getenv("GITHUB_REF_TYPE")
 	refName := os.Getenv("GITHUB_REF_NAME")
@@ -125,6 +146,11 @@ func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagge
 
 func buildAndRelease(client *dagger.Client, golang *dagger.Container, version string) {
 
+	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
+	if accessToken == "" {
+		panic("GITHUB_ACCESS_TOKEN env var is missing")
+	}
+
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
 	targets["windows"] = []string{"amd64", "386"}
@@ -143,11 +169,6 @@ func buildAndRelease(client *dagger.Client, golang *dagger.Container, version st
 				WithExec([]string{"go", "build", "-o", outFile, "goff"})
 			files = append(files, outFile)
 		}
-	}
-
-	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
-	if accessToken == "" {
-		panic("GITHUB_ACCESS_TOKEN env var is missing")
 	}
 
 	_, err := golang.Directory("build/").Export(context.Background(), "./build")
