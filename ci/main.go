@@ -89,7 +89,7 @@ func main() {
 	//Add GOFF and Gitlab CLI to our standard build container
 	//Push into registry
 	if refName == "main" {
-		publishImage(golang, daggerClient, regUser, secret, ctx)
+		publishImage(ctx, golang, daggerClient, regUser, secret)
 	} else {
 		//Lazy eval
 		_, err = golang.Sync(ctx)
@@ -100,7 +100,7 @@ func main() {
 
 	//If version tag, build binary releases and release them on github
 	if refType == "tag" && strings.HasPrefix(refName, "v") {
-		buildAndRelease(daggerClient, golang, refName)
+		buildAndRelease(ctx, daggerClient, golang, refName)
 	}
 
 	if refName == "main" {
@@ -110,7 +110,7 @@ func main() {
 
 }
 
-func publishImage(golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret, ctx context.Context) {
+func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret) {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
@@ -144,7 +144,7 @@ func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagge
 
 }
 
-func buildAndRelease(client *dagger.Client, golang *dagger.Container, version string) {
+func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.Container, version string) {
 
 	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
 	if accessToken == "" {
@@ -158,20 +158,32 @@ func buildAndRelease(client *dagger.Client, golang *dagger.Container, version st
 
 	files := make([]string, 0)
 
+	errGroup, ctx := errgroup.WithContext(ctx)
+
 	for os, target := range targets {
 		for i := range target {
-			arch := target[i]
-			outFile := fmt.Sprintf("./build/goff-%s-%s-%s", os, arch, version)
-			golang = golang.
-				WithEnvVariable("GOOS", os).
-				WithEnvVariable("GOARCH", arch).
-				WithEnvVariable("CC", "").
-				WithExec([]string{"go", "build", "-o", outFile, "goff"})
-			files = append(files, outFile)
+			errGroup.Go(func() error {
+				var buildErr error
+				arch := target[i]
+				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", os, arch, version)
+				golang, buildErr = golang.
+					WithEnvVariable("GOOS", os).
+					WithEnvVariable("GOARCH", arch).
+					WithEnvVariable("CC", "").
+					WithExec([]string{"go", "build", "-o", outFile, "goff"}).
+					Sync(ctx)
+				files = append(files, outFile)
+				return buildErr
+			})
 		}
 	}
 
-	_, err := golang.Directory("build/").Export(context.Background(), "./build")
+	err := errGroup.Wait()
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = golang.Directory("build/").Export(context.Background(), "./build")
 	if err != nil {
 		panic(err)
 	}
