@@ -125,6 +125,11 @@ func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagge
 
 func buildAndRelease(client *dagger.Client, golang *dagger.Container, version string) {
 
+	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
+	if accessToken == "" {
+		panic("GITHUB_ACCESS_TOKEN env var is missing")
+	}
+
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
 	targets["windows"] = []string{"amd64", "386"}
@@ -140,14 +145,9 @@ func buildAndRelease(client *dagger.Client, golang *dagger.Container, version st
 				WithEnvVariable("GOOS", os).
 				WithEnvVariable("GOARCH", arch).
 				WithEnvVariable("CC", "").
-				WithExec([]string{"go", "build", "-o", outFile, "goff"})
+				WithExec([]string{"go", "build", "-o", outFile, "github.com/puzzle/goff"})
 			files = append(files, outFile)
 		}
-	}
-
-	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
-	if accessToken == "" {
-		panic("GITHUB_ACCESS_TOKEN env var is missing")
 	}
 
 	_, err := golang.Directory("build/").Export(context.Background(), "./build")
