@@ -22,7 +22,7 @@ var diffCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Long:  `Generate diff between two directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		diff.Diff(*title, *markdown, args[0], args[1], *outputDir)
+		diff.Diff(*title, *markdown, args[0], args[1], *outputDir, *exitCode)
 	},
 }
 
