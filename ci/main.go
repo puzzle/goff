@@ -28,6 +28,9 @@ func main() {
 		panic(fmt.Errorf("Env var REGISTRY_USER not set"))
 	}
 
+	refType := os.Getenv("GITHUB_REF_TYPE")
+	refName := os.Getenv("GITHUB_REF_NAME")
+
 	// create golang base
 	goMod := daggerClient.CacheVolume("go")
 	base := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
@@ -57,7 +60,7 @@ func main() {
 	//test and build
 	golang = golang.WithDirectory("/src", source)
 
-	errGroup, ctx := errgroup.WithContext(ctx)
+	errGroup, _ := errgroup.WithContext(ctx)
 
 	errGroup.Go(func() error {
 		_, err := golang.
@@ -67,12 +70,18 @@ func main() {
 	})
 
 	errGroup.Go(func() error {
-		golang, err = golang.
+		_, err := golang.
 			WithExec([]string{"mkdir", "-p", "/app"}).
 			WithEnvVariable("CC", "musl-gcc").
 			WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
 			WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}).
 			Sync(ctx)
+
+			//Add GOFF and Gitlab CLI to our standard build container
+		//Push into registry
+		if refName == "main" {
+			publishImage(ctx, golang, daggerClient, regUser, secret)
+		}
 
 		return err
 
@@ -81,21 +90,6 @@ func main() {
 	err = errGroup.Wait()
 	if err != nil {
 		panic(err)
-	}
-
-	refType := os.Getenv("GITHUB_REF_TYPE")
-	refName := os.Getenv("GITHUB_REF_NAME")
-
-	//Add GOFF and Gitlab CLI to our standard build container
-	//Push into registry
-	if refName == "main" {
-		publishImage(ctx, golang, daggerClient, regUser, secret)
-	} else {
-		//Lazy eval
-		_, err = golang.Sync(ctx)
-		if err != nil {
-			panic(err)
-		}
 	}
 
 	//If version tag, build binary releases and release them on github
