@@ -31,7 +31,7 @@ type fileDiff struct {
 	Diff     string
 }
 
-func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
+func Diff(title, templateName, sourceDir, tragetDir, outputDir string, exitCode int) {
 
 	template, err := getTemplate(templateName)
 	if err != nil {
@@ -53,8 +53,12 @@ func Diff(title, templateName, sourceDir, tragetDir, outputDir string) {
 	}
 
 	if len(diffs) < 1 {
-		os.WriteFile(path, []byte("### ⚠️ No Changes detected!"), 0777)
-		return
+		if exitCode == 0 {
+			os.WriteFile(path, []byte("### ⚠️ No changes detected!"), 0777)
+			return
+		} else {
+			os.Exit(exitCode)
+		}
 	}
 
 	err = template.Execute(f, d)

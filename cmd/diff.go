@@ -13,6 +13,7 @@ import (
 var markdown *string
 var title *string
 var outputDir *string
+var exitCode *int
 
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
@@ -31,4 +32,5 @@ func init() {
 	markdown = diffCmd.Flags().StringP("markdown", "m", "markdown", "Markdown template")
 	title = diffCmd.Flags().StringP("title", "t", "Preview", "Title for markdown")
 	outputDir = diffCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
+	exitCode = diffCmd.Flags().IntP("exit-code", "x", 0, "Exit code if no diff is found")
 }
