@@ -55,7 +55,7 @@ require (
 )
 
 require (
-	github.com/argoproj/argo-cd/v2 v2.7.1
+	github.com/argoproj/argo-cd/v2 v2.7.3
 	github.com/ghodss/yaml v1.0.0
 	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
 )
@@ -69,7 +69,7 @@ require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
 	github.com/acomagu/bufpipe v1.0.4 // indirect
-	github.com/argoproj/gitops-engine v0.7.1-0.20230214165351-ed70eac8b7bd // indirect
+	github.com/argoproj/gitops-engine v0.7.1-0.20230512020822-b4dd8b8c3976 // indirect
 	github.com/argoproj/pkg v0.13.7-0.20221221191914-44694015343d // indirect
 	github.com/bombsimon/logrusr/v2 v2.0.1 // indirect
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0 // indirect
