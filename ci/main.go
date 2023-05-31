@@ -151,6 +151,11 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 		panic("GITHUB_ACCESS_TOKEN env var is missing")
 	}
 
+	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
+	if accessToken == "" {
+		panic("GITHUB_ACCESS_TOKEN env var is missing")
+	}
+
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
 	targets["windows"] = []string{"amd64", "386"}
@@ -184,6 +189,7 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 	}
 
 	_, err = golang.Directory("build/").Export(context.Background(), "./build")
+
 	if err != nil {
 		panic(err)
 	}
@@ -191,11 +197,11 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 	ghContainer := client.Container().From("ghcr.io/supportpal/github-gh-cli").
 		WithEnvVariable("GITHUB_TOKEN", accessToken).
 		WithDirectory("/build", golang.Directory("build/")).
-		WithExec([]string{"gh", "-R", "schlapzz/goff", "release", "create", version})
+		WithExec([]string{"gh", "-R", "puzzle/goff", "release", "create", version})
 
 	for _, f := range files {
 		ghContainer = ghContainer.
-			WithExec([]string{"gh", "-R", "schlapzz/goff", "release", "upload", version, f})
+			WithExec([]string{"gh", "-R", "puzzle/goff", "release", "upload", version, f})
 	}
 
 	//Evaluate

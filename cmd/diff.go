@@ -13,6 +13,7 @@ import (
 var markdown *string
 var title *string
 var outputDir *string
+var exitCode *int
 
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
@@ -21,7 +22,7 @@ var diffCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Long:  `Generate diff between two directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		diff.Diff(*title, *markdown, args[0], args[1], *outputDir)
+		diff.Diff(*title, *markdown, args[0], args[1], *outputDir, *exitCode)
 	},
 }
 
@@ -31,4 +32,5 @@ func init() {
 	markdown = diffCmd.Flags().StringP("markdown", "m", "markdown", "Markdown template")
 	title = diffCmd.Flags().StringP("title", "t", "Preview", "Title for markdown")
 	outputDir = diffCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
+	exitCode = diffCmd.Flags().IntP("exit-code", "x", 0, "Exit code if no diff is found")
 }
