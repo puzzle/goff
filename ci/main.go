@@ -70,17 +70,21 @@ func main() {
 	})
 
 	errGroup.Go(func() error {
-		_, err := golang.
+		goffGitlab, err := golang.
 			WithExec([]string{"mkdir", "-p", "/app"}).
 			WithEnvVariable("CC", "musl-gcc").
 			WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
 			WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}).
 			Sync(ctx)
 
-			//Add GOFF and Gitlab CLI to our standard build container
+		if err != nil {
+			return err
+		}
+
+		//Add GOFF and Gitlab CLI to our standard build container
 		//Push into registry
 		if refName == "main" {
-			publishImage(ctx, golang, daggerClient, regUser, secret)
+			err = publishImage(ctx, goffGitlab, daggerClient, regUser, secret)
 		}
 
 		return err
@@ -104,7 +108,7 @@ func main() {
 
 }
 
-func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret) {
+func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret) error {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
@@ -116,9 +120,8 @@ func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *d
 	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
 
 	_, err := goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
-	if err != nil {
-		panic(err)
-	}
+
+	return err
 }
 
 //Build repo server for GitHub actions becuase they don't yet support overriding the entrypoint
