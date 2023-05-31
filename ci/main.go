@@ -151,11 +151,6 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 		panic("GITHUB_ACCESS_TOKEN env var is missing")
 	}
 
-	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
-	if accessToken == "" {
-		panic("GITHUB_ACCESS_TOKEN env var is missing")
-	}
-
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
 	targets["windows"] = []string{"amd64", "386"}
