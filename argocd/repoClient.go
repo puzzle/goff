@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/puzzle/goff/util"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
@@ -25,29 +26,31 @@ type RepoCredentails struct {
 	KeyFile  string
 }
 
-func Render(dir, repoServerUrl, outputDir string, creds RepoCredentails) {
+func Render(dir, repoServerUrl, outputDir string, creds RepoCredentails) error {
 	conn := apiclient.NewRepoServerClientset(repoServerUrl, 600, apiclient.TLSConfiguration{StrictValidation: false})
 	r, client, err := conn.NewRepoServerClient()
 	defer r.Close()
 
 	if err != nil {
-		panic(err)
+		return errors.Wrap(err, "could not connect to repo server")
 	}
 
 	files, err := findArgoApps(dir)
 
 	if err != nil {
-		panic(err)
+		return errors.Wrap(err, "could not find argo apps")
 	}
 
+	var lastErr error
 	for _, file := range files {
 		log.Debugf("processing ArgoCD Application at: %s", file)
 		err = renderFile(file, repoServerUrl, outputDir, client, creds)
 		if err != nil {
 			log.Errorf("could not render argoCD Application: %v", err)
+			lastErr = err
 		}
 	}
-
+	return lastErr
 }
 
 func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServerServiceClient, creds RepoCredentails) error {

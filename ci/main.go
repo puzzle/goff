@@ -63,9 +63,14 @@ func main() {
 	errGroup, _ := errgroup.WithContext(ctx)
 
 	errGroup.Go(func() error {
+
+		repoServer := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
+			WithExposedPort(8081).
+			WithEntrypoint([]string{"argocd-repo-server"}).WithExec(nil)
+
 		_, err := golang.
-			WithExec([]string{"go", "test", "./...", "-v"}).
-			Sync(ctx)
+			WithServiceBinding("reposerver", repoServer).
+			WithExec([]string{"go", "test", "./...", "-v"}).Stdout(ctx)
 		return err
 	})
 
@@ -163,25 +168,21 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 				var buildErr error
 				arch := target[i]
 				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", os, arch, version)
-				golang, buildErr = golang.
+				golang = golang.
 					WithEnvVariable("GOOS", os).
 					WithEnvVariable("GOARCH", arch).
 					WithEnvVariable("CC", "").
-					WithExec([]string{"go", "build", "-o", outFile, "goff"}).
-					Sync(ctx)
+					WithExec([]string{"go", "build", "-o", outFile, "goff"})
 				files = append(files, outFile)
+
+				_, buildErr = golang.Directory("build/").Export(context.Background(), "./build")
+
 				return buildErr
 			})
 		}
 	}
 
 	err := errGroup.Wait()
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = golang.Directory("build/").Export(context.Background(), "./build")
-
 	if err != nil {
 		panic(err)
 	}

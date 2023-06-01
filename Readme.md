@@ -1,3 +1,5 @@
+[![ci](https://github.com/puzzle/goff/actions/workflows/main.yml/badge.svg)](https://github.com/puzzle/goff/actions/workflows/main.yml)
+
 # GOFF
 
 Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about [How to Preview and Diff Your Argo CD Deployments](https://youtu.be/X392bJX0AEs) we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository.
@@ -73,7 +75,7 @@ Use "goff [command] --help" for more information about a command.
 | Helm                  | ✅ Supported through plain manifests        |
 | Kustomize             | ✅                                          |
 | ArgoCD Application    | ✅ Needs a local ArgoCD Repo server instance             |
-| ArgoCD ApplicationSet |  🚧 Not yet supported                       |
+| ArgoCD ApplicationSet |  🚧 Not yet fully supported (List generators only)                |
 
 ## Build
 
