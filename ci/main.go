@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"dagger.io/dagger"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -26,6 +27,9 @@ func main() {
 	if !ok {
 		panic(fmt.Errorf("Env var REGISTRY_USER not set"))
 	}
+
+	refType := os.Getenv("GITHUB_REF_TYPE")
+	refName := os.Getenv("GITHUB_REF_NAME")
 
 	// create golang base
 	goMod := daggerClient.CacheVolume("go")
@@ -54,32 +58,47 @@ func main() {
 	})
 
 	//test and build
-	golang = golang.
-		WithDirectory("/src", source).
-		WithExec([]string{"mkdir", "-p", "/app"}).
-		WithEnvVariable("CC", "musl-gcc").
-		WithExec([]string{"go", "test", "./...", "-v"}).
-		WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
-		WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}) //download gitlab cli
+	golang = golang.WithDirectory("/src", source)
 
-	refType := os.Getenv("GITHUB_REF_TYPE")
-	refName := os.Getenv("GITHUB_REF_NAME")
+	errGroup, _ := errgroup.WithContext(ctx)
 
-	//Add GOFF and Gitlab CLI to our standard build container
-	//Push into registry
-	if refName == "main" {
-		publishImage(golang, daggerClient, regUser, secret, ctx)
-	} else {
-		//Lazy eval
-		_, err = golang.Sync(ctx)
+	errGroup.Go(func() error {
+		_, err := golang.
+			WithExec([]string{"go", "test", "./...", "-v"}).
+			Sync(ctx)
+		return err
+	})
+
+	errGroup.Go(func() error {
+		goffGitlab, err := golang.
+			WithExec([]string{"mkdir", "-p", "/app"}).
+			WithEnvVariable("CC", "musl-gcc").
+			WithExec([]string{"go", "build", "-o", "/app/goff", "github.com/puzzle/goff"}).
+			WithExec([]string{"go", "install", "gitlab.com/gitlab-org/cli/cmd/glab@main"}).
+			Sync(ctx)
+
 		if err != nil {
-			panic(err)
+			return err
 		}
+
+		//Add GOFF and Gitlab CLI to our standard build container
+		//Push into registry
+		if refName == "main" {
+			err = publishImage(ctx, goffGitlab, daggerClient, regUser, secret)
+		}
+
+		return err
+
+	})
+
+	err = errGroup.Wait()
+	if err != nil {
+		panic(err)
 	}
 
 	//If version tag, build binary releases and release them on github
 	if refType == "tag" && strings.HasPrefix(refName, "v") {
-		buildAndRelease(daggerClient, golang, refName)
+		buildAndRelease(ctx, daggerClient, golang, refName)
 	}
 
 	if refName == "main" {
@@ -89,7 +108,7 @@ func main() {
 
 }
 
-func publishImage(golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret, ctx context.Context) {
+func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret) error {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
@@ -101,9 +120,8 @@ func publishImage(golang *dagger.Container, daggerClient *dagger.Client, regUser
 	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
 
 	_, err := goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
-	if err != nil {
-		panic(err)
-	}
+
+	return err
 }
 
 //Build repo server for GitHub actions becuase they don't yet support overriding the entrypoint
@@ -123,7 +141,7 @@ func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagge
 
 }
 
-func buildAndRelease(client *dagger.Client, golang *dagger.Container, version string) {
+func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.Container, version string) {
 
 	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
 	if accessToken == "" {
@@ -137,20 +155,33 @@ func buildAndRelease(client *dagger.Client, golang *dagger.Container, version st
 
 	files := make([]string, 0)
 
+	errGroup, ctx := errgroup.WithContext(ctx)
+
 	for os, target := range targets {
 		for i := range target {
-			arch := target[i]
-			outFile := fmt.Sprintf("./build/goff-%s-%s-%s", os, arch, version)
-			golang = golang.
-				WithEnvVariable("GOOS", os).
-				WithEnvVariable("GOARCH", arch).
-				WithEnvVariable("CC", "").
-				WithExec([]string{"go", "build", "-o", outFile, "github.com/puzzle/goff"})
-			files = append(files, outFile)
+			errGroup.Go(func() error {
+				var buildErr error
+				arch := target[i]
+				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", os, arch, version)
+				golang, buildErr = golang.
+					WithEnvVariable("GOOS", os).
+					WithEnvVariable("GOARCH", arch).
+					WithEnvVariable("CC", "").
+					WithExec([]string{"go", "build", "-o", outFile, "goff"}).
+					Sync(ctx)
+				files = append(files, outFile)
+				return buildErr
+			})
 		}
 	}
 
-	_, err := golang.Directory("build/").Export(context.Background(), "./build")
+	err := errGroup.Wait()
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = golang.Directory("build/").Export(context.Background(), "./build")
+
 	if err != nil {
 		panic(err)
 	}
