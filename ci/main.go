@@ -104,9 +104,6 @@ func main() {
 	//If version tag, build binary releases and release them on github
 	if refType == "tag" && strings.HasPrefix(refName, "v") {
 		buildAndRelease(ctx, daggerClient, golang, refName)
-	}
-
-	if refName == "main" {
 		//Build patched ArgoCD Repo server
 		buildArgoCdRepoServer(ctx, regUser, secret, daggerClient)
 	}
@@ -164,20 +161,25 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 
 	for os, target := range targets {
 		for i := range target {
+			arch := target[i]
+			oss := os
 			errGroup.Go(func() error {
 				var buildErr error
-				arch := target[i]
-				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", os, arch, version)
-				golang = golang.
-					WithEnvVariable("GOOS", os).
+				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", oss, arch, version)
+				_, buildErr = golang.
+					WithEnvVariable("GOOS", oss).
 					WithEnvVariable("GOARCH", arch).
 					WithEnvVariable("CC", "").
-					WithExec([]string{"go", "build", "-o", outFile, "goff"})
+					WithExec([]string{"go", "build", "-o", outFile, "github.com/puzzle/goff"}).
+					File(outFile).Export(ctx, outFile)
+
+				if buildErr != nil {
+					return buildErr
+				}
+
 				files = append(files, outFile)
 
-				_, buildErr = golang.Directory("build/").Export(context.Background(), "./build")
-
-				return buildErr
+				return nil
 			})
 		}
 	}
@@ -187,9 +189,10 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 		panic(err)
 	}
 
+	buildDir := client.Host().Directory("build/")
 	ghContainer := client.Container().From("ghcr.io/supportpal/github-gh-cli").
 		WithEnvVariable("GITHUB_TOKEN", accessToken).
-		WithDirectory("/build", golang.Directory("build/")).
+		WithDirectory("/build", buildDir).
 		WithExec([]string{"gh", "-R", "puzzle/goff", "release", "create", version})
 
 	for _, f := range files {
