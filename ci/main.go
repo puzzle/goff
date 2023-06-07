@@ -88,8 +88,12 @@ func main() {
 
 		//Add GOFF and Gitlab CLI to our standard build container
 		//Push into registry
-		if refName == "main" {
-			err = publishImage(ctx, goffGitlab, daggerClient, regUser, secret)
+		if refName == "main" || isReleaseTag(refName, refType) {
+			tag := "latest"
+			if isReleaseTag(refName, refType) {
+				tag = refName
+			}
+			err = publishImage(ctx, goffGitlab, daggerClient, regUser, secret, tag)
 		}
 
 		return err
@@ -102,7 +106,7 @@ func main() {
 	}
 
 	//If version tag, build binary releases and release them on github
-	if refType == "tag" && strings.HasPrefix(refName, "v") {
+	if isReleaseTag(refName, refType) {
 		buildAndRelease(ctx, daggerClient, golang, refName)
 		//Build patched ArgoCD Repo server
 		buildArgoCdRepoServer(ctx, regUser, secret, daggerClient)
@@ -110,7 +114,7 @@ func main() {
 
 }
 
-func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret) error {
+func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret, tag string) error {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
@@ -121,7 +125,8 @@ func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *d
 
 	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
 
-	_, err := goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, "quay.io/puzzle/goff")
+	imageName := fmt.Sprintf("quay.io/puzzle/goff:%s", tag)
+	_, err := goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, imageName)
 
 	return err
 }
@@ -205,4 +210,8 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 	if err != nil {
 		panic(err)
 	}
+}
+
+func isReleaseTag(refName, refType string) bool {
+	return refType == "tag" && strings.HasPrefix(refName, "v")
 }
