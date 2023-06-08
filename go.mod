@@ -21,6 +21,7 @@ require (
 require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
+	github.com/99designs/gqlgen v0.17.2 // indirect
 	github.com/Khan/genqlient v0.5.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
@@ -62,7 +63,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.14.0 // indirect
-	dagger.io/dagger v0.7.0
+	dagger.io/dagger v0.7.1
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20170808103936-bb23615498cd // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
