@@ -10,7 +10,26 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+type GoffPipeline struct {
+	GithubAccessToken string
+	RefType           string
+	RefName           string
+	RegistryUser      string
+	RegistrySecret    string
+	RegistryUrl       string
+	Release           Releaser
+}
+
+type Releaser interface {
+	releaseFiles(client *dagger.Client, version string, files []string)
+}
+
 func main() {
+	gp := NewFromGithub()
+	gp.run()
+}
+
+func (g *GoffPipeline) run() {
 
 	// create Dagger client
 	ctx := context.Background()
@@ -19,17 +38,6 @@ func main() {
 		panic(err)
 	}
 	defer daggerClient.Close()
-
-	//Get Registry password as secret
-	secret := daggerClient.SetSecret("reg-secret", os.Getenv("REGISTRY_PASSWORD"))
-
-	regUser, ok := os.LookupEnv("REGISTRY_USER")
-	if !ok {
-		panic(fmt.Errorf("Env var REGISTRY_USER not set"))
-	}
-
-	refType := os.Getenv("GITHUB_REF_TYPE")
-	refName := os.Getenv("GITHUB_REF_NAME")
 
 	// create golang base
 	goMod := daggerClient.CacheVolume("go")
@@ -88,12 +96,9 @@ func main() {
 
 		//Add GOFF and Gitlab CLI to our standard build container
 		//Push into registry
-		if refName == "main" || isReleaseTag(refName, refType) {
-			tag := "latest"
-			if isReleaseTag(refName, refType) {
-				tag = refName
-			}
-			err = publishImage(ctx, goffGitlab, daggerClient, regUser, secret, tag)
+		if g.RefName == "main" || g.isReleaseTag() {
+
+			err = g.publishImage(ctx, goffGitlab, daggerClient)
 		}
 
 		return err
@@ -106,15 +111,26 @@ func main() {
 	}
 
 	//If version tag, build binary releases and release them on github
-	if isReleaseTag(refName, refType) {
-		buildAndRelease(ctx, daggerClient, golang, refName)
+	if g.isReleaseTag() {
+		files := g.buildAndRelease(ctx, daggerClient, golang)
+		var r Releaser = g
+		r.releaseFiles(daggerClient, g.RefName, files)
 		//Build patched ArgoCD Repo server
-		buildArgoCdRepoServer(ctx, regUser, secret, daggerClient)
+		g.buildArgoCdRepoServer(ctx, daggerClient)
 	}
-
 }
 
-func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client, regUser string, secret *dagger.Secret, tag string) error {
+func NewFromGithub() GoffPipeline {
+	return GoffPipeline{
+		RefType:        mustLoadEnv("GITHUB_REF_TYPE"),
+		RefName:        mustLoadEnv("GITHUB_REF_NAME"),
+		RegistrySecret: mustLoadEnv("REGISTRY_PASSWORD"),
+		RegistryUser:   mustLoadEnv("REGISTRY_USER"),
+		RegistryUrl:    mustLoadEnv("REGISTRY_URL"),
+	}
+}
+
+func (g *GoffPipeline) publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client) error {
 	goffBin := golang.File("/app/goff")
 	glabBin := golang.File("/go/bin/glab")
 
@@ -125,14 +141,20 @@ func publishImage(ctx context.Context, golang *dagger.Container, daggerClient *d
 
 	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
 
+	tag := "latest"
+	if g.isReleaseTag() {
+		tag = g.RefName
+	}
 	imageName := fmt.Sprintf("quay.io/puzzle/goff:%s", tag)
-	_, err := goffContainer.WithRegistryAuth("quay.io", regUser, secret).Publish(ctx, imageName)
+	secret := daggerClient.SetSecret("reg-secret", g.RegistrySecret)
+
+	_, err := goffContainer.WithRegistryAuth("quay.io", g.RegistryUser, secret).Publish(ctx, imageName)
 
 	return err
 }
 
 //Build repo server for GitHub actions becuase they don't yet support overriding the entrypoint
-func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagger.Secret, client *dagger.Client) {
+func (g *GoffPipeline) buildArgoCdRepoServer(ctx context.Context, client *dagger.Client) {
 
 	repoServerContainer := client.Container().From("quay.io/argoproj/argocd:latest").
 		WithUser("root").
@@ -141,19 +163,16 @@ func buildArgoCdRepoServer(ctx context.Context, regUser string, regSecret *dagge
 		WithUser("argocd").
 		WithEntrypoint([]string{"argocd-repo-server"})
 
-	_, err := repoServerContainer.WithRegistryAuth("quay.io", regUser, regSecret).Publish(ctx, "quay.io/puzzle/argocd-repo-server")
+	secret := client.SetSecret("reg-secret", g.RegistrySecret)
+
+	_, err := repoServerContainer.WithRegistryAuth(g.RegistryUrl, g.RegistryUser, secret).Publish(ctx, g.getImageFullUrl("argocd-repo-server"))
 	if err != nil {
 		panic(err)
 	}
 
 }
 
-func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.Container, version string) {
-
-	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
-	if accessToken == "" {
-		panic("GITHUB_ACCESS_TOKEN env var is missing")
-	}
+func (g *GoffPipeline) buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.Container) []string {
 
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
@@ -170,7 +189,7 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 			oss := os
 			errGroup.Go(func() error {
 				var buildErr error
-				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", oss, arch, version)
+				outFile := fmt.Sprintf("./build/goff-%s-%s-%s", oss, arch, g.RefName)
 				_, buildErr = golang.
 					WithEnvVariable("GOOS", oss).
 					WithEnvVariable("GOARCH", arch).
@@ -194,9 +213,14 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 		panic(err)
 	}
 
+	return files
+}
+
+func (g *GoffPipeline) releaseFiles(client *dagger.Client, version string, files []string) {
+
 	buildDir := client.Host().Directory("build/")
 	ghContainer := client.Container().From("ghcr.io/supportpal/github-gh-cli").
-		WithEnvVariable("GITHUB_TOKEN", accessToken).
+		WithEnvVariable("GITHUB_TOKEN", g.GithubAccessToken).
 		WithDirectory("/build", buildDir).
 		WithExec([]string{"gh", "-R", "puzzle/goff", "release", "create", version})
 
@@ -205,13 +229,28 @@ func buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.
 			WithExec([]string{"gh", "-R", "puzzle/goff", "release", "upload", version, f})
 	}
 
-	//Evaluate
-	_, err = ghContainer.Sync(context.Background())
+	_, err := ghContainer.Sync(context.Background())
 	if err != nil {
 		panic(err)
 	}
 }
 
-func isReleaseTag(refName, refType string) bool {
-	return refType == "tag" && strings.HasPrefix(refName, "v")
+func (g *GoffPipeline) isReleaseTag() bool {
+	return g.RefType == "tag" && strings.HasPrefix(g.RefName, "v")
+}
+
+func (g *GoffPipeline) getImageFullUrl(name string) string {
+	tag := "latest"
+	if g.isReleaseTag() {
+		tag = g.RefName
+	}
+	return fmt.Sprintf("%s/puzzle/%s:%s", g.RegistryUrl, name, tag)
+}
+
+func mustLoadEnv(env string) string {
+	val, found := os.LookupEnv(env)
+	if !found {
+		panic(fmt.Errorf("Env var '%s' not set", env))
+	}
+	return val
 }
