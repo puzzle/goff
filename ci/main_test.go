@@ -44,7 +44,20 @@ func randomHex(n int) string {
 
 func TestMain(t *testing.T) {
 	os.Chdir("..")
+	ctx := context.Background()
+	daggerClient, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	if err != nil {
+		t.Fail()
+	}
+	defer daggerClient.Close()
 
+	testNonMainBranch(ctx, t, daggerClient)
+	testMainBranch(ctx, t, daggerClient)
+	testNonReleaseTag(ctx, t, daggerClient)
+	testReleaseTag(ctx, t, daggerClient)
+}
+
+func testNonMainBranch(ctx context.Context, t *testing.T, client *dagger.Client) {
 	gp := &GoffPipeline{
 		GithubAccessToken: "empty",
 		RefType:           "branch",
@@ -60,16 +73,12 @@ func TestMain(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	ctx := context.Background()
-	daggerClient, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
-	if err != nil {
-		t.Fail()
-	}
-	defer daggerClient.Close()
-
-	_, err = daggerClient.Container().From(gp.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
+	_, err = client.Container().From(gp.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
 	assert.Error(t, err, "container with name '%s' should not exists", gp.getImageFullUrl("goff"))
 
+}
+
+func testMainBranch(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
 	gpMain := &GoffPipeline{
 		GithubAccessToken: "empty",
 		RefType:           "branch",
@@ -81,12 +90,14 @@ func TestMain(t *testing.T) {
 		DefaultImageTag:   randomHex(12),
 	}
 
-	err = gpMain.run()
+	err := gpMain.run()
 	assert.Nil(t, err)
 
 	_, err = daggerClient.Container().From(gpMain.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
 	assert.Nil(t, err, "container '%s' should exists and be functional", gpMain.getImageFullUrl("goff"))
+}
 
+func testNonReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
 	gpWrongTag := &GoffPipeline{
 		GithubAccessToken: "empty",
 		RefType:           "tag",
@@ -98,12 +109,14 @@ func TestMain(t *testing.T) {
 		DefaultImageTag:   randomHex(12),
 	}
 
-	err = gpWrongTag.run()
+	err := gpWrongTag.run()
 	assert.Nil(t, err)
 
 	_, err = daggerClient.Container().From(gpWrongTag.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
 	assert.Error(t, err, "container with name '%s' should not exists", gpWrongTag.getImageFullUrl("goff"))
+}
 
+func testReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
 	gprelease := &GoffPipeline{
 		GithubAccessToken: "empty",
 		RefType:           "tag",
@@ -115,10 +128,9 @@ func TestMain(t *testing.T) {
 		DefaultImageTag:   randomHex(12),
 	}
 
-	err = gprelease.run()
+	err := gprelease.run()
 	assert.Nil(t, err)
 
 	_, err = daggerClient.Container().From(gprelease.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
 	assert.Nil(t, err, "container with name '%s' should exists", gprelease.getImageFullUrl("goff"))
-
 }
