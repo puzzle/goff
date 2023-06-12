@@ -133,4 +133,5 @@ func testReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Clie
 
 	_, err = daggerClient.Container().From(gprelease.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
 	assert.Nil(t, err, "container with name '%s' should exists", gprelease.getImageFullUrl("goff"))
+
 }
