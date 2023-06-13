@@ -4,11 +4,13 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/go-godo/godo/glob"
 
 	"github.com/hexops/gotextdiff"
 	"github.com/hexops/gotextdiff/myers"
@@ -31,14 +33,14 @@ type fileDiff struct {
 	Diff     string
 }
 
-func Diff(title, templateName, sourceDir, tragetDir, outputDir string, exitCode int) {
+func Diff(title, templateName, sourceDir, tragetDir, glob, outputDir string, exitCode int) {
 
 	template, err := getTemplate(templateName)
 	if err != nil {
 		panic(err)
 	}
 
-	diffs := CreateDiffs(tragetDir, sourceDir)
+	diffs := CreateDiffs(tragetDir, sourceDir, glob)
 
 	d := diffMd{
 		Title: title,
@@ -68,9 +70,9 @@ func Diff(title, templateName, sourceDir, tragetDir, outputDir string, exitCode 
 
 }
 
-func CreateDiffs(tragetDir string, sourceDir string) []fileDiff {
-	target, _ := findAsMap(tragetDir)
-	source, _ := findAsMap(sourceDir)
+func CreateDiffs(tragetDir, sourceDir, glob string) []fileDiff {
+	target, _ := findAsMap(tragetDir, glob)
+	source, _ := findAsMap(sourceDir, glob)
 	for file, _ := range source {
 		if _, ok := target[file]; !ok {
 			target[file] = ""
@@ -125,22 +127,24 @@ func getTemplate(templateName string) (*template.Template, error) {
 
 }
 
-func findAsMap(root string) (map[string]string, error) {
+func findAsMap(root, globPattern string) (map[string]string, error) {
 	var f map[string]string
 	f = make(map[string]string)
 
-	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
-		if e != nil {
-			return e
-		}
-		if filepath.Ext(d.Name()) == ".yaml" {
+	globPattern = path.Join(path.Clean(root), globPattern)
 
-			relPath := strings.TrimPrefix(s, root)
+	files, _, err := glob.Glob([]string{globPattern})
+	if err != nil {
+		return nil, err
+	}
 
-			content, _ := os.ReadFile(s)
-			f[relPath] = string(content)
-		}
-		return nil
-	})
-	return f, err
+	for i := range files {
+		file := files[i].Path
+		relPath := strings.TrimPrefix(file, path.Clean(root))
+
+		content, _ := os.ReadFile(file)
+		f[relPath] = string(content)
+	}
+
+	return f, nil
 }
