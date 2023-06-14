@@ -44,7 +44,7 @@ create_comment_kustomize:
 create_comment_argo:
     services:
       - name: quay.io/argoproj/argocd:latest
-        alias: reposerver
+        alias: repo-server
         entrypoint:
           - "/usr/local/bin/argocd-repo-server"
     stage: merge
@@ -54,7 +54,7 @@ create_comment_argo:
      - git clone -b $CI_MERGE_REQUEST_TARGET_BRANCH_NAME --single-branch $CI_REPOSITORY_URL /tmp/checkout/target
      - mkdir -p /tmp/source
      - mkdir -p /tmp/target
-     - goff argocd "./argocd" --repoServer="reposerver:8081" --output-dir=/tmp/source/
+     - goff argocd "./argocd" --repo-server="repo-server:8081" --output-dir=/tmp/source/
      - goff argocd "/tmp/checkout/target/argocd"  --output-dir=/tmp/target/
      - goff diff "/tmp/source" "/tmp/target" --output-dir /tmp/
      - glab auth login --hostname gitlab.puzzle.ch -t $GITLAB_ACCESS_TOKEN
