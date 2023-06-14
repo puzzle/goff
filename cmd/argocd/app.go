@@ -28,6 +28,6 @@ var ArgocdAppCmd = &cobra.Command{
 
 func init() {
 
-	repoServerUrl = ArgocdAppCmd.Flags().String("repoServer", "localhost:8081", "URL to argoCD repo server")
+	repoServerUrl = ArgocdAppCmd.Flags().String("repo-server", "localhost:8081", "URL to argoCD repo server")
 
 }

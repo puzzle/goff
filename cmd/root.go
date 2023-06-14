@@ -40,5 +40,5 @@ func init() {
 
 	rootCmd.AddCommand(argocd.ArgocdCmd)
 
-	logLevel = rootCmd.PersistentFlags().StringP("logLevel", "l", "error", "Set loglevel [debug, info, error]")
+	logLevel = rootCmd.PersistentFlags().StringP("log-level", "l", "error", "Set loglevel [debug, info, error]")
 }

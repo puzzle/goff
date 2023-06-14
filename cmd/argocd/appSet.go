@@ -12,7 +12,7 @@ import (
 
 // argocdCmd represents the argocd command
 var ArgocdAppSetCmd = &cobra.Command{
-	Use:   "appSet [sourceDir]",
+	Use:   "appset [sourceDir]",
 	Short: "Render ArgoCD Applications manifests from ApplicationSets",
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render ArgoCD Applications manifests from ArgoCD ApplicationSets`,
