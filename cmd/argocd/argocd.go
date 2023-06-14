@@ -21,7 +21,7 @@ var ArgocdCmd = &cobra.Command{
 	Short: "Render manifests from ArgoCD resources",
 	Long:  `Render manifests from ArgoCD resources`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("specify one subcommand [app|appSet]")
+		fmt.Println("specify one subcommand [app|appset]")
 	},
 }
 
