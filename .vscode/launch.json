@@ -18,7 +18,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["argocd", "out/split_source", "--repoServer=localhost:8081", "--output-dir=out/",  "-u", "argo2", "-p", "SdJ4VDURYR8qVF-7qBRF"]
+            "args": ["argocd", "out/split_source", "--repo-server=localhost:8081", "--output-dir=out/",  "-u", "argo2", "-p", "SdJ4VDURYR8qVF-7qBRF"]
         },
         {
             "name": "Kustomize build",

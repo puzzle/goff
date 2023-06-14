@@ -31,9 +31,9 @@ goff diff "/tmp/source" "/tmp/target" --title=Preview --output-dir .
 Example for ArgoCD Application diff
 ```bash
 #Render all ArgoCD manifests in directory from source branch
-goff argocd app "./source/argocd" --repoServer="reposerver:8081" --output-dir=/tmp/source/
+goff argocd app "./source/argocd" --repo-server="repo-server:8081" --output-dir=/tmp/source/
 #Render all ArgoCD manifests in directory from target branch
-goff argocd app "./target/argocd" --repoServer="reposerver:8081" --output-dir=/tmp/target/
+goff argocd app "./target/argocd" --repo-server="repo-server:8081" --output-dir=/tmp/target/
 #Diff rendered Kubernetes manifests
 goff diff "/tmp/source" "/tmp/target" --output-dir .
 ```
