@@ -25,6 +25,7 @@ require (
 	github.com/Khan/genqlient v0.5.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
+	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 // indirect
 	github.com/adrg/xdg v0.4.0 // indirect
 	github.com/gfleury/go-bitbucket-v1 v0.0.0-20220301131131-8e7ed04b843e // indirect
 	github.com/google/go-github/v35 v35.3.0 // indirect
@@ -33,14 +34,22 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
 	github.com/hashicorp/go-version v1.2.1 // indirect
+	github.com/howeyc/gopass v0.0.0-20210920133722-c8aef6fb66ef // indirect
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/jeremywohl/flatten v1.0.1 // indirect
 	github.com/ktrysmt/go-bitbucket v0.9.55 // indirect
+	github.com/mattn/go-colorable v0.1.4 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
+	github.com/mgutz/minimist v0.0.0-20151219120022-39eb8cf573ca // indirect
+	github.com/mgutz/str v1.2.0 // indirect
+	github.com/mgutz/to v1.0.0 // indirect
 	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b5 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
+	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
@@ -49,6 +58,8 @@ require (
 	github.com/xanzy/go-gitlab v0.60.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
+	gopkg.in/godo.v2 v2.0.9 // indirect
+	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 	k8s.io/api v0.27.2 // indirect
 	k8s.io/kubernetes v1.24.2 // indirect
 	sigs.k8s.io/controller-runtime v0.11.0 // indirect
@@ -58,6 +69,7 @@ require (
 require (
 	github.com/argoproj/argo-cd/v2 v2.7.4
 	github.com/ghodss/yaml v1.0.0
+	github.com/go-godo/godo v2.0.9+incompatible
 	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
 )
 
@@ -74,7 +86,6 @@ require (
 	github.com/argoproj/pkg v0.13.7-0.20221221191914-44694015343d // indirect
 	github.com/bombsimon/logrusr/v2 v2.0.1 // indirect
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0 // indirect
-	github.com/brianvoe/gofakeit/v6 v6.22.0
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chai2010/gettext-go v0.0.0-20170215093142-bf70f2a70fb1 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect

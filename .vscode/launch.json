@@ -37,6 +37,22 @@
             "args": ["diff", "./testdata/kustomize/source", "./testdata/kustomize/target"]
         },
         {
+            "name": "Diff",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "main.go",
+            "args": ["diff", "./testdata/diff/source", "./testdata/diff/target"]
+        },
+        {
+            "name": "Diff Glob",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "main.go",
+            "args": ["diff", "--include=**/*", "./testdata/diff/source", "./testdata/diff/target"]
+        },
+        {
             "name": "Run tests",
             "type": "go",
             "request": "launch",
