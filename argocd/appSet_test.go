@@ -8,7 +8,7 @@ import (
 func TestRenderApplicationSet(t *testing.T) {
 
 	outPath := "../out/app-set/"
-	err := RenderApplicationSet("../testdata/appSet/appSet_1.yaml", outPath)
+	err := RenderApplicationSets("../testdata/appSet/", outPath)
 	if err != nil {
 		t.Error(err)
 	}

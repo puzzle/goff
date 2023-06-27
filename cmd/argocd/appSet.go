@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package argocd
 
@@ -17,7 +16,7 @@ var ArgocdAppSetCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render ArgoCD Applications manifests from ArgoCD ApplicationSets`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := argocd.RenderApplicationSet(args[0], *ArgoOutputDir)
+		err := argocd.RenderApplicationSets(args[0], *ArgoOutputDir)
 		if err != nil {
 			panic(err)
 		}
