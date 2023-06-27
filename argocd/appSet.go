@@ -9,8 +9,31 @@ import (
 	"github.com/argoproj/argo-cd/v2/applicationset/utils"
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ghodss/yaml"
+	"github.com/go-godo/godo/glob"
 	log "github.com/sirupsen/logrus"
 )
+
+func RenderApplicationSets(inputDir, outDir string) error {
+	files, _, err := glob.Glob([]string{inputDir})
+	if err != nil {
+		return err
+	}
+
+	var hasError bool
+	for i := range files {
+		file := files[i].Path
+		err = RenderApplicationSet(file, outDir)
+		if err != nil {
+			log.Errorf("could not process application set '%s': %s", file, err.Error())
+			hasError = true
+		}
+	}
+
+	if hasError {
+		return fmt.Errorf("failed to process application set")
+	}
+	return nil
+}
 
 func RenderApplicationSet(appSetFile, outDir string) error {
 
@@ -18,7 +41,7 @@ func RenderApplicationSet(appSetFile, outDir string) error {
 
 	data, err := os.ReadFile(appSetFile)
 	if err != nil {
-		return fmt.Errorf("could not read ApplicationSet: %w", err)
+		return fmt.Errorf("could not read applicationSet: %w", err)
 	}
 
 	data, err = yaml.YAMLToJSON(data)
@@ -36,10 +59,15 @@ func RenderApplicationSet(appSetFile, outDir string) error {
 	supportedGens["List"] = listGen
 
 	apps, _, err := generateApplications(*appSet, supportedGens)
+	if err != nil {
+		return fmt.Errorf("could not generate applications: %w", err)
+	}
+
+	outDir = filepath.Join(outDir, appSet.Namespace, appSet.Name)
 
 	err = writeApplications(apps, outDir)
 	if err != nil {
-		return fmt.Errorf("could not wirte Applications: %w", err)
+		return fmt.Errorf("could not write applications: %w", err)
 	}
 	return nil
 }
