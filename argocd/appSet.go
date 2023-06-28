@@ -2,6 +2,7 @@ package argocd
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -9,19 +10,26 @@ import (
 	"github.com/argoproj/argo-cd/v2/applicationset/utils"
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ghodss/yaml"
-	"github.com/go-godo/godo/glob"
 	log "github.com/sirupsen/logrus"
 )
 
 func RenderApplicationSets(inputDir, outDir string) error {
-	files, _, err := glob.Glob([]string{inputDir})
+	inputDir, err := filepath.Abs(inputDir)
 	if err != nil {
 		return err
 	}
 
+	files := make([]string, 0)
+	filepath.WalkDir(inputDir, func(path string, d fs.DirEntry, err error) error {
+		if !d.IsDir() {
+			files = append(files, path)
+		}
+		return nil
+	})
+
 	var hasError bool
 	for i := range files {
-		file := files[i].Path
+		file := files[i]
 		err = RenderApplicationSet(file, outDir)
 		if err != nil {
 			log.Errorf("could not process application set '%s': %s", file, err.Error())
