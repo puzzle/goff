@@ -43,40 +43,13 @@ func (g *GoffPipeline) run() error {
 	}
 	defer daggerClient.Close()
 
-	// create golang base
-	goMod := daggerClient.CacheVolume("go")
-	base := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
-		From("golang:1.20").
-		WithMountedCache("/go/src", goMod)
-
-	//install musl for alpine builds on base image
-	base = base.
-		WithWorkdir("/src").
-		WithExec([]string{"apt", "update"}).
-		WithExec([]string{"apt", "install", "musl-tools", "-y"})
-
-	// get working directory on host
-	modDir := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
-		Include: []string{"go.mod", "go.sum"},
-	})
-
-	//download go modules
-	golang := base.WithDirectory("/src", modDir).
-		WithExec([]string{"go", "mod", "download"})
-
-	//get working directory on host, load files, exclude build and ci directory
-	source := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
-		Exclude: []string{"ci/", "build/"},
-	})
-
-	//add source to container
-	golang = golang.WithDirectory("/src", source)
+	golang := createGoBase(daggerClient)
 
 	//new error group for concurrent execution
 	errGroup, _ := errgroup.WithContext(ctx)
 
 	errGroup.Go(func() error {
-		return runTests(ctx, daggerClient, golang)
+		return runTests(ctx, golang, daggerClient)
 	})
 
 	errGroup.Go(func() error {
@@ -119,6 +92,40 @@ func (g *GoffPipeline) run() error {
 	return nil
 }
 
+// create golang base
+func createGoBase(daggerClient *dagger.Client) *dagger.Container {
+	goMod := daggerClient.CacheVolume("go")
+	goChache := daggerClient.CacheVolume("go-cache")
+
+	base := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
+		From("golang:1.20").
+		WithMountedCache("/go/src", goMod).
+		WithMountedCache("/root/.cache/go-build", goChache)
+
+	//install musl for alpine builds on base image
+	base = base.
+		WithWorkdir("/src").
+		WithExec([]string{"apt", "update"}).
+		WithExec([]string{"apt", "install", "musl-tools", "-y"})
+
+	// get working directory on host
+	modDir := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
+		Include: []string{"go.mod", "go.sum"},
+	})
+
+	//download go modules
+	golang := base.WithDirectory("/src", modDir).
+		WithExec([]string{"go", "mod", "download"})
+
+		//get working directory on host, load files, exclude build and ci directory
+	source := daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
+		Exclude: []string{"ci/", "build/"},
+	})
+
+	golang = golang.WithDirectory("/src", source)
+	return golang
+}
+
 func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *GoffPipeline, daggerClient *dagger.Client) error {
 
 	goffGitlab, err := golang.
@@ -152,14 +159,15 @@ func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *Goff
 
 }
 
-func runTests(ctx context.Context, daggerClient *dagger.Client, golang *dagger.Container) error {
+func runTests(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client) error {
+
 	repoServer := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
 		WithExposedPort(8081).
-		WithEntrypoint([]string{"argocd-repo-server"}).WithExec(nil)
+		WithEntrypoint([]string{"argocd-repo-server"})
 
 	_, err := golang.
 		WithServiceBinding("reposerver", repoServer).
-		WithExec([]string{"go", "test", "./...", "-v"}).Stdout(ctx)
+		WithExec([]string{"go", "test", "./...", "-v"}).Sync(ctx)
 	return err
 }
 

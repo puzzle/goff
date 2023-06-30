@@ -14,12 +14,13 @@ jobs:
   dagger:
     runs-on: ubuntu-latest
     services:
-      reposerver:
-        image: quay.io/puzzle/argocd-repo-server:latest
+      argocd-redis:
+        image: redis
         ports:
-          - "8081:8081"
+          - "6379:6379"
+        # Set health checks to wait until redis has started
         options: >-
-          --health-cmd "nc -z localhost 8081"
+          --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
