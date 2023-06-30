@@ -63,4 +63,4 @@ Use "goff [command] --help" for more information about a command.
 
 ## Documentation
 
-here
+### [Full documentation on Github pages](https://puzzle.github.io/) 
