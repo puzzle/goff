@@ -23,8 +23,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    container:
-      image: quay.io/puzzle/goff:latest
     steps:
       -
         name: Checkout
