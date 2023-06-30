@@ -21,10 +21,10 @@ goff diff "/tmp/source" "/tmp/target" --title=Preview --output-dir .
 ```
 
 1. Create a new branch and commit your changes in your Kustomize deployment
- ![GitHub Diff](doc/img/github-diff.png)
+ ![GitHub Diff](docs/img/github-diff.png)
 2. Run your pipeline, Goff renders the Base and the Overlays and calculate the diff between the source and target branch.
 3. Check the auto generated comment in your Pull request and review the changes
- ![GitHub Diff](doc/img/goff-diff.png)
+ ![GitHub Diff](docs/img/goff-diff.png)
 
 ### ArgoCD Application
 
