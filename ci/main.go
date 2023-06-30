@@ -11,18 +11,18 @@ import (
 )
 
 type GoffPipeline struct {
-	GithubAccessToken string
-	RefType           string
-	RefName           string
-	RegistryUser      string
-	RegistrySecret    string
-	RegistryUrl       string
-	DefaultImageTag   string
-	Release           Releaser
+	RefType         string
+	RefName         string
+	RegistryUser    string
+	RegistrySecret  string
+	RegistryUrl     string
+	DefaultImageTag string
+	Release         Releaser
 }
 
 type Releaser interface {
 	releaseFiles(client *dagger.Client, version string, files []string) error
+	releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error
 }
 
 func main() {
@@ -43,10 +43,10 @@ func (g *GoffPipeline) run() error {
 	}
 	defer daggerClient.Close()
 
-	/*err = releaseDocs(ctx, g, daggerClient)
+	err = g.Release.releaseDocs(ctx, "test", daggerClient)
 	if err != nil {
 		return err
-	}*/
+	}
 
 	// create golang base
 	goMod := daggerClient.CacheVolume("go")
@@ -116,10 +116,11 @@ func (g *GoffPipeline) run() error {
 	return nil
 }
 
-func releaseDocs(ctx context.Context, g *GoffPipeline, daggerClient *dagger.Client) error {
+func (g *GitHubReleaser) releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error {
 	mkdocs := daggerClient.Container().From("python:3-slim")
 
-	_, err := mkdocs.WithEnvVariable("GOFF_VERSION", g.RefName).
+	_, err := mkdocs.
+		WithEnvVariable("GOFF_VERSION", version).
 		WithExec([]string{"apt-get", "update"}).
 		WithExec([]string{"apt-get", "install", "git", "-y"}).
 		WithWorkdir("/src").
@@ -127,7 +128,14 @@ func releaseDocs(ctx context.Context, g *GoffPipeline, daggerClient *dagger.Clie
 		WithDirectory("/src", daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
 			Include: []string{"mkdocs.yml", "docs/", ".git"},
 		})).
-		WithExec([]string{"mkdocs", "gh-deploy"}).Sync(ctx)
+		WithExec([]string{"git", "remote", "set-url", "origin", fmt.Sprintf("https://schlapzz:%s@github.com/puzzle/goff.git", g.GithubAccessToken)}).
+		WithExec([]string{"git", "config", "--global", "user.email", "schlatter@puzzle.ch"}).
+		WithExec([]string{"git", "config", "--global", "user.name", "schlapzz"}).
+		WithExec([]string{"mkdocs", "build"}).
+		WithExec([]string{"git", "add", "."}).
+		WithExec([]string{"git", "commit", "-m", "test"}).
+		WithExec([]string{"git", "push"}).
+		Sync(ctx)
 
 	return err
 }

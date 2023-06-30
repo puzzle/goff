@@ -23,12 +23,19 @@ func (*ReleaseStub) releaseFiles(client *dagger.Client, version string, files []
 	return nil
 }
 
+func (*ReleaseStub) releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error {
+	return nil
+}
+
 type ReleaseStubErr struct {
 }
 
 // releaseFiles implements Releaser which return error
 func (*ReleaseStubErr) releaseFiles(client *dagger.Client, version string, files []string) error {
-	//return err
+	return errors.New("shoul not be called")
+}
+
+func (*ReleaseStubErr) releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error {
 	return errors.New("shoul not be called")
 }
 
@@ -59,14 +66,13 @@ func TestMain(t *testing.T) {
 
 func testNonMainBranch(ctx context.Context, t *testing.T, client *dagger.Client) {
 	gp := &GoffPipeline{
-		GithubAccessToken: "empty",
-		RefType:           "branch",
-		RefName:           "dev",
-		RegistryUser:      "admin",
-		RegistrySecret:    "secret",
-		RegistryUrl:       "ttl.sh",
-		Release:           &ReleaseStub{},
-		DefaultImageTag:   randomHex(12),
+		RefType:         "branch",
+		RefName:         "dev",
+		RegistryUser:    "admin",
+		RegistrySecret:  "secret",
+		RegistryUrl:     "ttl.sh",
+		Release:         &ReleaseStub{},
+		DefaultImageTag: randomHex(12),
 	}
 
 	err := gp.run()
@@ -80,14 +86,13 @@ func testNonMainBranch(ctx context.Context, t *testing.T, client *dagger.Client)
 
 func testMainBranch(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
 	gpMain := &GoffPipeline{
-		GithubAccessToken: "empty",
-		RefType:           "branch",
-		RefName:           "main",
-		RegistryUser:      "admin",
-		RegistrySecret:    "secret",
-		RegistryUrl:       "ttl.sh",
-		Release:           &ReleaseStubErr{},
-		DefaultImageTag:   randomHex(12),
+		RefType:         "branch",
+		RefName:         "main",
+		RegistryUser:    "admin",
+		RegistrySecret:  "secret",
+		RegistryUrl:     "ttl.sh",
+		Release:         &ReleaseStubErr{},
+		DefaultImageTag: randomHex(12),
 	}
 
 	err := gpMain.run()
@@ -99,14 +104,13 @@ func testMainBranch(ctx context.Context, t *testing.T, daggerClient *dagger.Clie
 
 func testNonReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
 	gpWrongTag := &GoffPipeline{
-		GithubAccessToken: "empty",
-		RefType:           "tag",
-		RefName:           "birnenbaum",
-		RegistryUser:      "admin",
-		RegistrySecret:    "secret",
-		RegistryUrl:       "ttl.sh",
-		Release:           &ReleaseStubErr{},
-		DefaultImageTag:   randomHex(12),
+		RefType:         "tag",
+		RefName:         "birnenbaum",
+		RegistryUser:    "admin",
+		RegistrySecret:  "secret",
+		RegistryUrl:     "ttl.sh",
+		Release:         &ReleaseStubErr{},
+		DefaultImageTag: randomHex(12),
 	}
 
 	err := gpWrongTag.run()
@@ -118,14 +122,13 @@ func testNonReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.C
 
 func testReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
 	gprelease := &GoffPipeline{
-		GithubAccessToken: "empty",
-		RefType:           "tag",
-		RefName:           fmt.Sprintf("v0.%d.%d", mrand.Intn(200), mrand.Intn(200)),
-		RegistryUser:      "admin",
-		RegistrySecret:    "secret",
-		RegistryUrl:       "ttl.sh",
-		Release:           &ReleaseStub{},
-		DefaultImageTag:   randomHex(12),
+		RefType:         "tag",
+		RefName:         fmt.Sprintf("v0.%d.%d", mrand.Intn(200), mrand.Intn(200)),
+		RegistryUser:    "admin",
+		RegistrySecret:  "secret",
+		RegistryUrl:     "ttl.sh",
+		Release:         &ReleaseStub{},
+		DefaultImageTag: randomHex(12),
 	}
 
 	err := gprelease.run()
