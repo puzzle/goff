@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://example.com/examples/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Examples - GOFF</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Examples";
+        var mkdocs_page_input_path = "examples.md";
+        var mkdocs_page_url = "/examples/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> GOFF
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Examples</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#helm">Helm</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kustomize">Kustomize</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#argocd">ArgoCD</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#argocd-application">ArgoCD Application</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#argocd-applicationset">ArgoCD ApplicationSet</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../integrations/">Integrations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build/">Build</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">GOFF</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li>Examples</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="examples">Examples</h1>
+<h2 id="helm">Helm</h2>
+<pre><code class="language-bash">#Clone source branch
+git clone --branch feature/A git@github.com:schlapzz/goff-github.git ./source/
+
+#Clone target branch
+git clone --branch main git@github.com:schlapzz/goff-github.git ./target/
+
+#Render source chart
+helm template mychart ./source/helm/mychart --output-dir /tmp/source/out
+#Render target Chart
+helm template mychart ./target/helm/mychart --output-dir /tmp/target/out
+
+#Diff rendered manifests
+goff diff &quot;/tmp/source&quot; &quot;/tmp/target&quot; --output-dir .
+</code></pre>
+<h2 id="kustomize">Kustomize</h2>
+<p>Example for Kustomization diff</p>
+<pre><code class="language-bash">#Clone source branch
+git clone --branch feature/A git@github.com:schlapzz/goff-github.git ./source/
+
+#Clone target branch
+git clone --branch main git@github.com:schlapzz/goff-github.git ./target/
+
+#Build base and all overlays from source branch
+goff kustomize build ./source/kustomize --output-dir /tmp/source/out
+#Build base and all overlays from target branch
+goff kustomize build ./target/kustomize --output-dir /tmp/target/out
+
+#Diff rendered manifests
+goff diff &quot;/tmp/source&quot; &quot;/tmp/target&quot; --title=Preview --output-dir .
+</code></pre>
+<h2 id="argocd">ArgoCD</h2>
+<pre><code class="language-bash">goff argocd -h
+Render manifests from ArgoCD resources
+
+Usage:
+  goff argocd [flags]
+  goff argocd [command]
+
+Available Commands:
+  app         Render manifests from ArgoCD Application
+  appset      Render ArgoCD Applications manifests from ApplicationSets
+
+Flags:
+  -h, --help                help for argocd
+  -o, --output-dir string   Output directory (default &quot;.&quot;)
+  -p, --password string     Repo password
+  -i, --ssh-key string      Repo SSH Key
+  -u, --username string     Repo username
+
+Global Flags:
+  -l, --log-level string   Set loglevel [debug, info, error] (default &quot;error&quot;)
+
+Use &quot;goff argocd [command] --help&quot; for more information about a command.
+</code></pre>
+<h3 id="argocd-application">ArgoCD Application</h3>
+<p>Example for ArgoCD Application diff</p>
+<pre><code class="language-bash">#Clone source branch
+git clone --branch feature/A git@github.com:schlapzz/goff-github.git ./source/
+
+#Clone target branch
+git clone --branch main git@github.com:schlapzz/goff-github.git ./target/
+
+#Start ArgoCD repo server to render Applications
+docker run -d -p 8081:8081 quay.io/argoproj/argocd:latest
+
+#Render all ArgoCD manifests in directory from source branch
+goff argocd app &quot;./source/argocd/app&quot; --repo-server=&quot;localhost:8081&quot; --output-dir=/tmp/source/
+#Render all ArgoCD manifests in directory from target branch
+goff argocd app &quot;./target/argocd/app&quot; --repo-server=&quot;localhost:8081&quot; --output-dir=/tmp/target/
+#Diff rendered Kubernetes manifests
+goff diff &quot;/tmp/source&quot; &quot;/tmp/target&quot; --output-dir .
+</code></pre>
+<h3 id="argocd-applicationset">ArgoCD ApplicationSet</h3>
+<p>Example for ArgoCD ApplicationSet diff</p>
+<pre><code class="language-bash">#Clone source branch
+git clone --branch feature/A git@github.com:schlapzz/goff-github.git ./source/
+
+#Clone target branch
+git clone --branch main git@github.com:schlapzz/goff-github.git ./target/
+
+#Render all ArgoCD manifests in directory from source branch
+goff argocd appset &quot;./source/argocd/app-set&quot; --repo-server=&quot;localhost:8081&quot; --output-dir=/tmp/source/
+#Render all ArgoCD manifests in directory from target branch
+goff argocd appset &quot;./target/argocd/app-set&quot; --repo-server=&quot;localhost:8081&quot; --output-dir=/tmp/target/
+#Diff rendered Kubernetes manifests
+goff diff &quot;/tmp/source&quot; &quot;/tmp/target&quot; --output-dir .
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../integrations/" class="btn btn-neutral float-right" title="Integrations">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../integrations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

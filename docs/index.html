@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><link rel="canonical" href="https://example.com/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>GOFF</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/";
+      </script>
+    
+    <script src="js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GOFF
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-tools">Supported Tools</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="examples/">Examples</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="integrations/">Integrations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="build/">Build</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GOFF</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><a href="https://github.com/puzzle/goff/actions/workflows/main.yml"><img alt="ci" src="https://github.com/puzzle/goff/actions/workflows/main.yml/badge.svg" /></a></p>
+<h1 id="goff-test">GOFF test</h1>
+<p>Inspired from Kostis Kapelonis (Codefresh.io) talk at the KubeCon about <a href="https://youtu.be/X392bJX0AEs">How to Preview and Diff Your Argo CD Deployments</a> we relased our own GitOps Diff tool (Goff). This tool helps you to preview your changes in your GitOps Repository.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>Example for ArgoCD Application diff</p>
+<pre><code class="language-bash">#Render all ArgoCD manifests in directory from source branch
+goff argocd app &quot;./source/argocd&quot; --repo-server=&quot;repo-server:8081&quot; --output-dir=/tmp/source/
+#Render all ArgoCD manifests in directory from target branch
+goff argocd app &quot;./target/argocd&quot; --repo-server=&quot;repo-server:8081&quot; --output-dir=/tmp/target/
+#Diff rendered Kubernetes manifests
+goff diff &quot;/tmp/source&quot; &quot;/tmp/target&quot; --output-dir .
+</code></pre>
+<ol>
+<li>Setup your pipeline in your GitOps repository. You can find examples integrations <a href="integrations/">for Github, Gitlab and Gitea here</a></li>
+<li>Create a new branch and commit your changes in your ArgoCd Application
+ <img alt="GitHub Diff" src="img/github-argo-diff.png" /></li>
+<li>Run your pipeline, Goff renders the Appication into manifests calculate the diff between the source and target branch.</li>
+<li>Check the auto generated comment in your Pull request and review the changes
+ <img alt="GitHub Diff" src="img/goff-argo-diff.png" /></li>
+</ol>
+<h2 id="installation">Installation</h2>
+<p>You can download the latest release here
+Or you can use the pre built Docker image <code>docker pull quay.io/puzzle/goff:test</code></p>
+<p>The image includes following tools:</p>
+<ul>
+<li>goff test</li>
+<li>Gitlab CLI</li>
+<li>Gitea CLI</li>
+<li>Helm</li>
+<li>Git</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<pre><code class="language-bash">GitOps Diff Tool
+
+Usage:  
+  goff [command]
+
+Available Commands:
+  argocd      Render manifests from ArgoCD resources
+  completion  Generate the autocompletion script for the specified shell
+  diff        Diff files [sourceDir] [targetDir]
+  help        Help about any command
+  kustomize   Generate a DOT file to visualize the dependencies between your kustomize components
+  split       Split manifests [manifestFile]
+
+Flags:
+  -h, --help              help for goff
+  -l, --logLevel string   Set loglevel [debug, info, error] (default &quot;error&quot;)
+
+Use &quot;goff [command] --help&quot; for more information about a command.
+</code></pre>
+<h2 id="supported-tools">Supported Tools</h2>
+<table>
+<thead>
+<tr>
+<th>Tooling</th>
+<th>Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain manifests</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Helm</td>
+<td>✅ Supported through plain manifests</td>
+</tr>
+<tr>
+<td>Kustomize</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>ArgoCD Application</td>
+<td>✅ Needs a local ArgoCD Repo server instance</td>
+</tr>
+<tr>
+<td>ArgoCD ApplicationSet</td>
+<td>🚧 Not yet fully supported (List generators only)</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="examples/" class="btn btn-neutral float-right" title="Examples">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="examples/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.4.3
+Build Date UTC : 2023-06-30 13:54:09.652713+00:00
+-->
