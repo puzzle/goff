@@ -43,6 +43,11 @@ func (g *GoffPipeline) run() error {
 	}
 	defer daggerClient.Close()
 
+	/*err = releaseDocs(ctx, g, daggerClient)
+	if err != nil {
+		return err
+	}*/
+
 	// create golang base
 	goMod := daggerClient.CacheVolume("go")
 	base := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
@@ -91,7 +96,7 @@ func (g *GoffPipeline) run() error {
 
 	//If version tag, build binary releases and release them on github
 	if g.isReleaseTag() {
-		files, err := g.buildAndRelease(ctx, daggerClient, golang)
+		files, err := g.build(ctx, daggerClient, golang)
 
 		if err != nil {
 			return err
@@ -109,6 +114,22 @@ func (g *GoffPipeline) run() error {
 	}
 
 	return nil
+}
+
+func releaseDocs(ctx context.Context, g *GoffPipeline, daggerClient *dagger.Client) error {
+	mkdocs := daggerClient.Container().From("python:3-slim")
+
+	_, err := mkdocs.WithEnvVariable("GOFF_VERSION", g.RefName).
+		WithExec([]string{"apt-get", "update"}).
+		WithExec([]string{"apt-get", "install", "git", "-y"}).
+		WithWorkdir("/src").
+		WithExec([]string{"pip", "install", "mkdocs", "mkdocs-markdownextradata-plugin"}).
+		WithDirectory("/src", daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
+			Include: []string{"mkdocs.yml", "docs/", ".git"},
+		})).
+		WithExec([]string{"mkdocs", "gh-deploy"}).Sync(ctx)
+
+	return err
 }
 
 func buildAndPushDevImage(golang *dagger.Container, ctx context.Context, g *GoffPipeline, daggerClient *dagger.Client) error {
@@ -179,7 +200,7 @@ func (g *GoffPipeline) buildArgoCdRepoServer(ctx context.Context, client *dagger
 
 }
 
-func (g *GoffPipeline) buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.Container) ([]string, error) {
+func (g *GoffPipeline) build(ctx context.Context, client *dagger.Client, golang *dagger.Container) ([]string, error) {
 
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
