@@ -73,7 +73,6 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 	}
 
 	repoDB := &dbmocks.ArgoDB{}
-	source := v1alpha1.ApplicationSource{}
 
 	var privateKey string
 	if creds.KeyFile != "" {
@@ -84,20 +83,8 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 		privateKey = string(data)
 	}
 
-	if app.Spec.Source != nil {
-		repoDB.On("GetRepository", context.Background(), app.Spec.Source.RepoURL).Return(&v1alpha1.Repository{
-			Repo:               app.Spec.Source.RepoURL,
-			SSHPrivateKey:      privateKey,
-			Username:           creds.Username,
-			Password:           creds.Password,
-			ForceHttpBasicAuth: true,
-		}, nil)
-		source = *app.Spec.Source
-	}
-
 	if app.Spec.Sources != nil {
-		for i := range app.Spec.Sources {
-			source = app.Spec.Sources[i]
+		for i := range app.Spec.GetSources() {
 			repo := app.Spec.Sources[i].RepoURL
 			if repo != "" {
 				repoDB.On("GetRepository", context.Background(), repo).Return(&v1alpha1.Repository{
@@ -112,18 +99,24 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 	}
 
 	refSources, err := argo.GetRefSources(context.Background(), app.Spec, repoDB)
+	if err != nil {
+		return err
+	}
+
+	appSrc := app.Spec.GetSourcePtr()
+
 	req := &apiclient.ManifestRequest{
-		ApplicationSource:  &source,
+		ApplicationSource:  appSrc,
 		AppName:            "goff-test",
 		NoCache:            true,
 		RefSources:         refSources,
 		HasMultipleSources: true,
-		Revision:           source.TargetRevision,
+		Revision:           appSrc.TargetRevision,
 		KustomizeOptions: &v1alpha1.KustomizeOptions{
 			BuildOptions: "--enable-helm",
 		},
 		Repo: &v1alpha1.Repository{
-			Repo:               source.RepoURL,
+			Repo:               appSrc.RepoURL,
 			SSHPrivateKey:      privateKey,
 			Username:           creds.Username,
 			Password:           creds.Password,
