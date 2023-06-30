@@ -2,6 +2,7 @@ package argocd
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -12,13 +13,43 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func RenderApplicationSets(inputDir, outDir string) error {
+	inputDir, err := filepath.Abs(inputDir)
+	if err != nil {
+		return err
+	}
+
+	files := make([]string, 0)
+	filepath.WalkDir(inputDir, func(path string, d fs.DirEntry, err error) error {
+		if !d.IsDir() {
+			files = append(files, path)
+		}
+		return nil
+	})
+
+	var hasError bool
+	for i := range files {
+		file := files[i]
+		err = RenderApplicationSet(file, outDir)
+		if err != nil {
+			log.Errorf("could not process application set '%s': %s", file, err.Error())
+			hasError = true
+		}
+	}
+
+	if hasError {
+		return fmt.Errorf("failed to process application set")
+	}
+	return nil
+}
+
 func RenderApplicationSet(appSetFile, outDir string) error {
 
 	appSet := &v1alpha1.ApplicationSet{}
 
 	data, err := os.ReadFile(appSetFile)
 	if err != nil {
-		return fmt.Errorf("could not read ApplicationSet: %w", err)
+		return fmt.Errorf("could not read applicationSet: %w", err)
 	}
 
 	data, err = yaml.YAMLToJSON(data)
@@ -36,10 +67,15 @@ func RenderApplicationSet(appSetFile, outDir string) error {
 	supportedGens["List"] = listGen
 
 	apps, _, err := generateApplications(*appSet, supportedGens)
+	if err != nil {
+		return fmt.Errorf("could not generate applications: %w", err)
+	}
+
+	outDir = filepath.Join(outDir, appSet.Namespace, appSet.Name)
 
 	err = writeApplications(apps, outDir)
 	if err != nil {
-		return fmt.Errorf("could not wirte Applications: %w", err)
+		return fmt.Errorf("could not write applications: %w", err)
 	}
 	return nil
 }
