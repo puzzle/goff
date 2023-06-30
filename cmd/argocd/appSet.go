@@ -15,10 +15,7 @@ var ArgocdAppSetCmd = &cobra.Command{
 	Short: "Render ArgoCD Applications manifests from ApplicationSets",
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render ArgoCD Applications manifests from ArgoCD ApplicationSets`,
-	Run: func(cmd *cobra.Command, args []string) {
-		err := argocd.RenderApplicationSets(args[0], *ArgoOutputDir)
-		if err != nil {
-			panic(err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return argocd.RenderApplicationSets(args[0], *ArgoOutputDir)
 	},
 }

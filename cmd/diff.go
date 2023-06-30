@@ -1,10 +1,11 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
+	"os"
+
 	"github.com/puzzle/goff/diff"
 
 	"github.com/spf13/cobra"
@@ -22,8 +23,17 @@ var diffCmd = &cobra.Command{
 	Short: "Diff files [sourceDir] [targetDir]",
 	Args:  cobra.ExactArgs(2),
 	Long:  `Generate diff between two directories`,
-	Run: func(cmd *cobra.Command, args []string) {
-		diff.Diff(*title, *markdown, args[0], args[1], *glob, *outputDir, *exitCode)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		found, err := diff.Diff(*title, *markdown, args[0], args[1], *glob, *outputDir, *exitCode)
+		if err != nil {
+			return err
+		}
+
+		if !found && *exitCode != 0 {
+			os.Exit(*exitCode)
+		}
+
+		return nil
 	},
 }
 
