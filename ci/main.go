@@ -11,18 +11,18 @@ import (
 )
 
 type GoffPipeline struct {
-	GithubAccessToken string
-	RefType           string
-	RefName           string
-	RegistryUser      string
-	RegistrySecret    string
-	RegistryUrl       string
-	DefaultImageTag   string
-	Release           Releaser
+	RefType         string
+	RefName         string
+	RegistryUser    string
+	RegistrySecret  string
+	RegistryUrl     string
+	DefaultImageTag string
+	Release         Releaser
 }
 
 type Releaser interface {
 	releaseFiles(client *dagger.Client, version string, files []string) error
+	releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error
 }
 
 func main() {
@@ -91,7 +91,7 @@ func (g *GoffPipeline) run() error {
 
 	//If version tag, build binary releases and release them on github
 	if g.isReleaseTag() {
-		files, err := g.buildAndRelease(ctx, daggerClient, golang)
+		files, err := g.build(ctx, daggerClient, golang)
 
 		if err != nil {
 			return err
@@ -99,6 +99,11 @@ func (g *GoffPipeline) run() error {
 
 		err = g.Release.releaseFiles(daggerClient, g.RefName, files)
 
+		if err != nil {
+			return err
+		}
+
+		err = g.Release.releaseDocs(ctx, g.RefName, daggerClient)
 		if err != nil {
 			return err
 		}
@@ -179,7 +184,7 @@ func (g *GoffPipeline) buildArgoCdRepoServer(ctx context.Context, client *dagger
 
 }
 
-func (g *GoffPipeline) buildAndRelease(ctx context.Context, client *dagger.Client, golang *dagger.Container) ([]string, error) {
+func (g *GoffPipeline) build(ctx context.Context, client *dagger.Client, golang *dagger.Container) ([]string, error) {
 
 	targets := make(map[string][]string)
 	targets["linux"] = []string{"amd64", "386", "arm"}
@@ -238,6 +243,36 @@ func (g *GitHubReleaser) releaseFiles(client *dagger.Client, version string, fil
 	}
 
 	_, err := ghContainer.Sync(context.Background())
+
+	return err
+}
+
+func (g *GitHubReleaser) releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error {
+	mkdocs := daggerClient.Container().From("python:3-slim")
+
+	token := daggerClient.SetSecret("token", g.GithubAccessToken)
+
+	_, err := mkdocs.
+		WithEnvVariable("GOFF_VERSION", version).
+		WithExec([]string{"apt-get", "update"}).
+		WithExec([]string{"apt-get", "install", "git", "-y"}).
+		WithWorkdir("/src").
+		WithExec([]string{"pip", "install", "mkdocs", "mkdocs-markdownextradata-plugin"}).
+		WithDirectory("/src", daggerClient.Host().Directory(".", dagger.HostDirectoryOpts{
+			Include: []string{"mkdocs.yml", "docs/", ".git"},
+		})).
+		WithSecretVariable("GH_PUSH_TOKEN", token).
+		WithExec([]string{"git", "remote", "set-url", "origin", "https://schlapzz:$GH_PUSH_TOKEN@github.com/puzzle/goff.git"}).
+		WithExec([]string{"git", "config", "--global", "user.email", "schlatter@puzzle.ch"}).
+		WithExec([]string{"git", "config", "--global", "user.name", "schlapzz"}).
+		WithExec([]string{"git", "checkout", "gh-pages"}).
+		WithExec([]string{"mkdocs", "build"}).
+		WithExec([]string{"rm", "-rf", "docs"}).
+		WithExec([]string{"mv", "site", "docs"}).
+		WithExec([]string{"git", "add", "."}).
+		WithExec([]string{"git", "commit", "-m", "test"}).
+		WithExec([]string{"git", "push", "--force"}).
+		Sync(ctx)
 
 	return err
 }
