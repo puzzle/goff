@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package argocd
 
@@ -20,8 +19,8 @@ var ArgocdCmd = &cobra.Command{
 	Use:   "argocd",
 	Short: "Render manifests from ArgoCD resources",
 	Long:  `Render manifests from ArgoCD resources`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("specify one subcommand [app|appset]")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return fmt.Errorf("specify one subcommand [app|appset]")
 	},
 }
 

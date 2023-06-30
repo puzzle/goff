@@ -14,11 +14,11 @@ import (
 	"sigs.k8s.io/kustomize/kustomize/v4/commands/build"
 )
 
-func BuildAll(sourceDir, targetDir string) {
+func BuildAll(sourceDir, targetDir string) error {
 
 	dirs, err := kustomizationfile.New().GetDirectories(sourceDir)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	fSys := filesys.MakeFsOnDisk()
@@ -27,7 +27,7 @@ func BuildAll(sourceDir, targetDir string) {
 		buffy := new(bytes.Buffer)
 		cmd := build.NewCmdBuild(fSys, build.MakeHelp("foo", "bar"), buffy)
 		if err := cmd.RunE(cmd, []string{dir}); err != nil {
-			panic(err)
+			return err
 		}
 
 		if buffy.Len() == 0 {
@@ -41,7 +41,7 @@ func BuildAll(sourceDir, targetDir string) {
 
 		err = os.MkdirAll(outPath, 0777)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		outFiles := bytes.Split(buffy.Bytes(), []byte("---"))
@@ -50,15 +50,17 @@ func BuildAll(sourceDir, targetDir string) {
 			content := string(f)
 			fileName, err := util.FileNameFromManifest(content)
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			outFile := filepath.Join(outPath, fileName)
 
 			err = os.WriteFile(outFile, f, 0777)
 			if err != nil {
-				panic(err)
+				return err
 			}
 		}
 	}
+
+	return nil
 }

@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package argocd
 
@@ -17,8 +16,8 @@ var ArgocdAppCmd = &cobra.Command{
 	Short: "Render manifests from ArgoCD Application",
 	Args:  cobra.ExactArgs(1),
 	Long:  `Render manifests from ArgoCD Application`,
-	Run: func(cmd *cobra.Command, args []string) {
-		argocd.Render(args[0], *repoServerUrl, *ArgoOutputDir, argocd.RepoCredentails{
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return argocd.Render(args[0], *repoServerUrl, *ArgoOutputDir, argocd.RepoCredentails{
 			Username: *RepoUsername,
 			Password: *RepoPassword,
 			KeyFile:  *RepoSshKey,
