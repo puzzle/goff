@@ -21,7 +21,7 @@ type GoffPipeline struct {
 }
 
 type Releaser interface {
-	releaseFiles(client *dagger.Client, version string, files []string) error
+	releaseFiles(ctx context.Context, version string, files []string, client *dagger.Client) error
 	releaseDocs(ctx context.Context, version string, daggerClient *dagger.Client) error
 }
 
@@ -76,11 +76,14 @@ func (g *GoffPipeline) run() error {
 	errGroup, _ := errgroup.WithContext(ctx)
 
 	errGroup.Go(func() error {
-		return runTests(daggerClient, golang, ctx)
+		return runTests(ctx, daggerClient, golang)
 	})
 
 	errGroup.Go(func() error {
-		return buildAndPushDevImage(golang, ctx, g, daggerClient)
+		if g.RefName == "main" || g.isReleaseTag() {
+			return buildAndPushDevImage(ctx, golang, g, daggerClient)
+		}
+		return nil
 
 	})
 
@@ -97,7 +100,7 @@ func (g *GoffPipeline) run() error {
 			return err
 		}
 
-		err = g.Release.releaseFiles(daggerClient, g.RefName, files)
+		err = g.Release.releaseFiles(ctx, g.RefName, files, daggerClient)
 
 		if err != nil {
 			return err
@@ -116,7 +119,8 @@ func (g *GoffPipeline) run() error {
 	return nil
 }
 
-func buildAndPushDevImage(golang *dagger.Container, ctx context.Context, g *GoffPipeline, daggerClient *dagger.Client) error {
+func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *GoffPipeline, daggerClient *dagger.Client) error {
+
 	goffGitlab, err := golang.
 		WithExec([]string{"mkdir", "-p", "/app"}).
 		WithEnvVariable("CC", "musl-gcc").
@@ -128,27 +132,8 @@ func buildAndPushDevImage(golang *dagger.Container, ctx context.Context, g *Goff
 		return err
 	}
 
-	if g.RefName == "main" || g.isReleaseTag() {
-		err = g.publishImage(ctx, goffGitlab, daggerClient)
-	}
-
-	return err
-}
-
-func runTests(daggerClient *dagger.Client, golang *dagger.Container, ctx context.Context) error {
-	repoServer := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
-		WithExposedPort(8081).
-		WithEntrypoint([]string{"argocd-repo-server"}).WithExec(nil)
-
-	_, err := golang.
-		WithServiceBinding("reposerver", repoServer).
-		WithExec([]string{"go", "test", "./...", "-v"}).Stdout(ctx)
-	return err
-}
-
-func (g *GoffPipeline) publishImage(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client) error {
-	goffBin := golang.File("/app/goff")
-	glabBin := golang.File("/go/bin/glab")
+	goffBin := goffGitlab.File("/app/goff")
+	glabBin := goffGitlab.File("/go/bin/glab")
 
 	goffContainer := daggerClient.Container().From("docker.io/alpine:3.18").
 		WithFile("/bin/goff", goffBin).
@@ -161,8 +146,20 @@ func (g *GoffPipeline) publishImage(ctx context.Context, golang *dagger.Containe
 
 	imageName := g.getImageFullUrl("goff")
 
-	_, err := goffContainer.WithRegistryAuth(g.RegistryUrl, g.RegistryUser, secret).Publish(ctx, imageName)
+	_, err = goffContainer.WithRegistryAuth(g.RegistryUrl, g.RegistryUser, secret).Publish(ctx, imageName)
 
+	return err
+
+}
+
+func runTests(ctx context.Context, daggerClient *dagger.Client, golang *dagger.Container) error {
+	repoServer := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
+		WithExposedPort(8081).
+		WithEntrypoint([]string{"argocd-repo-server"}).WithExec(nil)
+
+	_, err := golang.
+		WithServiceBinding("reposerver", repoServer).
+		WithExec([]string{"go", "test", "./...", "-v"}).Stdout(ctx)
 	return err
 }
 
@@ -229,7 +226,7 @@ type GitHubReleaser struct {
 	GithubAccessToken string
 }
 
-func (g *GitHubReleaser) releaseFiles(client *dagger.Client, version string, files []string) error {
+func (g *GitHubReleaser) releaseFiles(ctx context.Context, version string, files []string, client *dagger.Client) error {
 
 	buildDir := client.Host().Directory("build/")
 	ghContainer := client.Container().From("ghcr.io/supportpal/github-gh-cli").

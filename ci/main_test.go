@@ -18,7 +18,7 @@ type ReleaseStub struct {
 }
 
 // releaseFiles implements Releaser
-func (*ReleaseStub) releaseFiles(client *dagger.Client, version string, files []string) error {
+func (*ReleaseStub) releaseFiles(ctx context.Context, version string, files []string, client *dagger.Client) error {
 	//Do nothing
 	return nil
 }
@@ -31,7 +31,7 @@ type ReleaseStubErr struct {
 }
 
 // releaseFiles implements Releaser which return error
-func (*ReleaseStubErr) releaseFiles(client *dagger.Client, version string, files []string) error {
+func (*ReleaseStubErr) releaseFiles(ctx context.Context, version string, files []string, client *dagger.Client) error {
 	return errors.New("shoul not be called")
 }
 
