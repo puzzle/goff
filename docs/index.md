@@ -1,4 +1,9 @@
+![ci](img/goff-logo.png)
+
+
+
 [![ci](https://github.com/puzzle/goff/actions/workflows/main.yml/badge.svg)](https://github.com/puzzle/goff/actions/workflows/main.yml)
+
 
 # GOFF #{{ goff.version }}
 
