@@ -270,7 +270,8 @@ func (g *GitHubReleaser) releaseDocs(ctx context.Context, version string, dagger
 		WithExec([]string{"git", "remote", "set-url", "origin", "https://schlapzz:$GH_PUSH_TOKEN@github.com/puzzle/goff.git"}).
 		WithExec([]string{"git", "config", "--global", "user.email", "schlatter@puzzle.ch"}).
 		WithExec([]string{"git", "config", "--global", "user.name", "schlapzz"}).
-		WithExec([]string{"git", "checkout", "gh-pages"}).
+		WithExec([]string{"git", "fetch"}).
+		WithExec([]string{"git", "checkout", "origin/gh-pages"}).
 		WithExec([]string{"mkdocs", "build"}).
 		WithExec([]string{"rm", "-rf", "docs"}).
 		WithExec([]string{"mv", "site", "docs"}).
