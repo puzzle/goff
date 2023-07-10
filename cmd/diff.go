@@ -22,7 +22,7 @@ var diffCmd = &cobra.Command{
 	Use:   "diff",
 	Short: "Diff files [sourceDir] [targetDir]",
 	Args:  cobra.ExactArgs(2),
-	Long:  `Generate diff between two directories`,
+	Long:  `Generate diff between two directories. You can use the --include optoin to include or exclude certain files with a glob pattern`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		found, err := diff.Diff(*title, *markdown, args[0], args[1], *glob, *outputDir, *exitCode)
 		if err != nil {
