@@ -9,9 +9,6 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-env:
-  _EXPERIMENTAL_DAGGER_CACHE_CONFIG: type=gha;mode=max
-
 jobs:
   dagger:
     runs-on: ubuntu-latest
@@ -40,7 +37,9 @@ jobs:
         run: go get dagger.io/dagger@latest
       -
         name: Release and deploy with Dagger
-        run: go run ci/main.go
+        run: |
+          export _EXPERIMENTAL_DAGGER_CACHE_CONFIG="type=gha,mode=max,url=$ACTIONS_CACHE_URL,token=$ACTIONS_RUNTIME_TOKEN"
+          go run ci/main.go
         env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
           REGISTRY_USER: '${{ secrets.REGISTRY_USER }}'
