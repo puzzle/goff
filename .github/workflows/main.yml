@@ -40,11 +40,12 @@ jobs:
         name: Install
         run: go get dagger.io/dagger@latest
       -
+        name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
+      -
         name: Release and deploy with Dagger
         run: |
-          export ACTIONS_RUNTIME_TOKEN=$ACTIONS_ID_TOKEN_REQUEST_TOKEN
-          export ACTIONS_CACHE_URL=$ACTIONS_ID_TOKEN_REQUEST_URL
-          export _EXPERIMENTAL_DAGGER_CACHE_CONFIG="type=gha,mode=max"
+          export _EXPERIMENTAL_DAGGER_CACHE_CONFIG="type=gha,mode=max,url=$ACTIONS_CACHE_URL,token=$ACTIONS_RUNTIME_TOKEN"
           go run ci/main.go
         env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
