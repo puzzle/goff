@@ -32,6 +32,7 @@ func Execute() {
 	log.SetLevel(level)
 	err = rootCmd.Execute()
 	if err != nil {
+		//If exit code is set on diff sub command, exit is handled directly in the diff subcommand
 		os.Exit(1)
 	}
 }
