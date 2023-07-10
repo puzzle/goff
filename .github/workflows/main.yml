@@ -44,7 +44,7 @@ jobs:
         run: |
           export ACTIONS_RUNTIME_TOKEN=$ACTIONS_ID_TOKEN_REQUEST_TOKEN
           export ACTIONS_CACHE_URL=$ACTIONS_ID_TOKEN_REQUEST_URL
-          export _EXPERIMENTAL_DAGGER_CACHE_CONFIG="type=gha,mode=max,url=$ACTIONS_CACHE_URL,token=$ACTIONS_RUNTIME_TOKEN"
+          export _EXPERIMENTAL_DAGGER_CACHE_CONFIG="type=gha,mode=max"
           go run ci/main.go
         env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
