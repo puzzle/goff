@@ -142,12 +142,17 @@ func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *Goff
 	goffBin := goffGitlab.File("/app/goff")
 	glabBin := goffGitlab.File("/go/bin/glab")
 
-	goffContainer := daggerClient.Container().From("docker.io/alpine:3.18").
+	goffContainer := daggerClient.Container().
+		From("docker.io/alpine:3.18").
+		WithExec([]string{"addgroup", "-g", "1001", "goff"}).
+		WithExec([]string{"adduser", "-D", "-u", "1001", "-G", "goff", "goff"}).
 		WithFile("/bin/goff", goffBin).
 		WithFile("/bin/glab", glabBin).
 		WithExec([]string{"apk", "add", "git", "helm"})
 
-	goffContainer = goffContainer.WithEntrypoint([]string{"/bin/goff"})
+	goffContainer = goffContainer.
+		WithEntrypoint([]string{"/bin/goff"}).
+		WithUser("goff")
 
 	secret := daggerClient.SetSecret("reg-secret", g.RegistrySecret)
 
