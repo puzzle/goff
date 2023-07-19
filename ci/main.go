@@ -166,9 +166,12 @@ func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *Goff
 
 func runTests(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client) error {
 
+	redis := daggerClient.Container().From("redis").
+		WithExposedPort(6379)
+
 	repoServer := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
 		WithExposedPort(8081).
-		WithEntrypoint([]string{"argocd-repo-server"})
+		WithServiceBinding("argocd-redis", redis)
 
 	_, err := golang.
 		WithServiceBinding("reposerver", repoServer).
