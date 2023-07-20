@@ -9,6 +9,9 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+permissions:
+  id-token: write # Important for at least docker gha cache
+  contents: read
 
 jobs:
   dagger:
@@ -37,10 +40,16 @@ jobs:
         name: Install
         run: go get dagger.io/dagger@latest
       -
+        name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
+      -
         name: Release and deploy with Dagger
-        run: go run ci/main.go
+        run: |
+          export _EXPERIMENTAL_DAGGER_CACHE_CONFIG="type=gha,mode=max,url=$ACTIONS_CACHE_URL,token=$ACTIONS_RUNTIME_TOKEN"
+          go run ci/main.go
         env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
           REGISTRY_USER: '${{ secrets.REGISTRY_USER }}'
           GITHUB_ACCESS_TOKEN:  '${{ secrets.GH_ACCESS_TOKEN }}'
           REGISTRY_URL: '${{ secrets.REGISTRY_URL }}'
+
