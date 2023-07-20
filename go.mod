@@ -67,7 +67,7 @@ require (
 )
 
 require (
-	github.com/argoproj/argo-cd/v2 v2.7.4
+	github.com/argoproj/argo-cd/v2 v2.7.8
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
 	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
@@ -83,7 +83,7 @@ require (
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
 	github.com/acomagu/bufpipe v1.0.4 // indirect
 	github.com/argoproj/gitops-engine v0.7.1-0.20230526233214-ad9a694fe4bc // indirect
-	github.com/argoproj/pkg v0.13.7-0.20221221191914-44694015343d // indirect
+	github.com/argoproj/pkg v0.13.7-0.20230627120311-a4dd357b057e // indirect
 	github.com/bombsimon/logrusr/v2 v2.0.1 // indirect
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -131,7 +131,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/klauspost/compress v1.15.9 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
