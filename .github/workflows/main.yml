@@ -41,7 +41,7 @@ jobs:
         run: go get dagger.io/dagger@latest
       -
         name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
+        uses: crazy-max/ghaction-github-runtime@v3
       -
         name: Release and deploy with Dagger
         run: |
