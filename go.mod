@@ -8,7 +8,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 )
 
-require golang.org/x/text v0.11.0 // indirect
+require golang.org/x/text v0.13.0 // indirect
 
 require (
 	github.com/awalterschulze/gographviz v2.0.3+incompatible
@@ -34,32 +34,22 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
 	github.com/hashicorp/go-version v1.2.1 // indirect
-	github.com/howeyc/gopass v0.0.0-20210920133722-c8aef6fb66ef // indirect
 	github.com/huandu/xstrings v1.3.3 // indirect
-	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jeremywohl/flatten v1.0.1 // indirect
 	github.com/ktrysmt/go-bitbucket v0.9.55 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
-	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
-	github.com/mgutz/minimist v0.0.0-20151219120022-39eb8cf573ca // indirect
 	github.com/mgutz/str v1.2.0 // indirect
-	github.com/mgutz/to v1.0.0 // indirect
 	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b5 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
-	github.com/nozzle/throttler v0.0.0-20180817012639-2ea982251481 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.6 // indirect
 	github.com/xanzy/go-gitlab v0.60.0 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/tools v0.11.0 // indirect
-	gopkg.in/godo.v2 v2.0.9 // indirect
-	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	k8s.io/api v0.27.3 // indirect
 	k8s.io/kubernetes v1.24.2 // indirect
 	sigs.k8s.io/controller-runtime v0.11.0 // indirect
@@ -75,7 +65,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.14.0 // indirect
-	dagger.io/dagger v0.7.4
+	dagger.io/dagger v0.9.2
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20170808103936-bb23615498cd // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
@@ -164,12 +154,12 @@ require (
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/trace v1.11.1 // indirect
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
-	golang.org/x/crypto v0.11.0 // indirect
-	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/net v0.16.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
-	golang.org/x/sync v0.3.0
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/term v0.10.0 // indirect
+	golang.org/x/sync v0.4.0
+	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/term v0.13.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef // indirect
