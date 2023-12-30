@@ -1,6 +1,8 @@
 module github.com/puzzle/goff
 
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 require (
 	github.com/pkg/errors v0.9.1
@@ -65,7 +67,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.14.0 // indirect
-	dagger.io/dagger v0.9.2
+	dagger.io/dagger v0.9.5
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20170808103936-bb23615498cd // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect

@@ -1,0 +1,2 @@
+┃ panic: input:1: container.from.withMountedCache.withMountedCache.withWorkdir.withExec.withExec.withDirectory.withExec.withDirectory.withServiceBindin        
+┃ g.withExec.sync start L8N20DJ2O3M6M (aliased as reposerver): health check errored: exit code: 1

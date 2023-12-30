@@ -43,10 +43,10 @@ func Render(dir, repoServerUrl, outputDir string, creds RepoCredentails) error {
 
 	var lastErr error
 	for _, file := range files {
-		log.Debugf("processing ArgoCD Application at: %s", file)
+		log.Debugf("processing ArgoCD Application: %s", file)
 		err = renderFile(file, repoServerUrl, outputDir, client, creds)
 		if err != nil {
-			log.Errorf("could not render argoCD Application: %v", err)
+			log.Errorf("could not render ArgoCD Application: %v", err)
 			lastErr = err
 		}
 	}

@@ -31,6 +31,6 @@ OUTER:
 				continue OUTER
 			}
 		}
-		t.Errorf("no matching file found for: %s", e.Name())
+		t.Errorf("no matching file found for:  %s", e.Name())
 	}
 }
