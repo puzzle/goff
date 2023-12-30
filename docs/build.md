@@ -6,7 +6,7 @@
 go build -o goff github.com/puzzle/goff 
 ```
 
-### Build Image with dagger
+### Build Image with Dagger
 
 First set the required env vars.
 For releasing a new version, GITHUB_REF_TYPE=tag and a valid version must be set GITHUB_REF_NAME=vX.X.X
@@ -19,6 +19,14 @@ export REGISTRY_USER=bar
 export REGISTRY_PASSWORD=foo
 ```
 
+or load the default configuration
+
+```bash
+source ./local.env
+```
+
+Then run the pipeline with
+
 ```bash
 go run ci/main.go 
 ```
@@ -29,3 +37,7 @@ or
 dagger run go run ci/main.go 
 ```
 
+Optionalli can register a Jaeger endpoint wit following env var:
+```bash
+export OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces
+```

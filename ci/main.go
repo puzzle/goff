@@ -166,16 +166,29 @@ func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *Goff
 
 func runTests(ctx context.Context, golang *dagger.Container, daggerClient *dagger.Client) error {
 
-	redis := daggerClient.Container().From("redis").
-		WithExposedPort(6379)
+	redis, err := daggerClient.Container().From("registry.puzzle.ch/docker.io/redis").
+		WithExposedPort(6379).AsService().Start(ctx)
 
-	repoServer := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
+	if err != nil {
+		return err
+	}
+
+	repoServer, err := daggerClient.Container().From("quay.io/puzzle/argocd-repo-server:latest").
 		WithExposedPort(8081).
-		WithServiceBinding("argocd-redis", redis)
+		WithServiceBinding("argocd-redis", redis).
+		AsService().Start(ctx)
 
-	_, err := golang.
+	if err != nil {
+		return err
+	}
+
+	_, err = golang.
 		WithServiceBinding("reposerver", repoServer).
 		WithExec([]string{"go", "test", "./...", "-v"}).Sync(ctx)
+
+	repoServer.Stop(ctx)
+	redis.Stop(ctx)
+
 	return err
 }
 
