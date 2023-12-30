@@ -1,8 +1,6 @@
 module github.com/puzzle/goff
 
-go 1.21
-
-toolchain go1.21.3
+go 1.21.3
 
 require (
 	github.com/pkg/errors v0.9.1
