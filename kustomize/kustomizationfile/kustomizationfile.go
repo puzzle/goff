@@ -59,6 +59,7 @@ func (k *kustomizationFileContext) GetDirectories(directoryRootPath string) ([]s
 
 	directories := make([]string, 0)
 	err = filepath.Walk(directoryRootPath, func(path string, info os.FileInfo, err error) error {
+
 		if err != nil {
 			return err
 		}

@@ -21,6 +21,11 @@ func RenderApplicationSets(inputDir, outDir string) error {
 
 	files := make([]string, 0)
 	filepath.WalkDir(inputDir, func(path string, d fs.DirEntry, err error) error {
+
+		if err != nil {
+			return err
+		}
+
 		if !d.IsDir() {
 			files = append(files, path)
 		}
