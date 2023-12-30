@@ -160,6 +160,11 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 func findArgoApps(rootDir string) ([]string, error) {
 	var argoAppFiles []string
 	err := filepath.Walk(rootDir, func(path string, info fs.FileInfo, err error) error {
+
+		if err != nil {
+			return err
+		}
+
 		if strings.HasSuffix(info.Name(), ".yml") || strings.HasSuffix(info.Name(), ".yaml") {
 
 			data, err := os.ReadFile(path)
