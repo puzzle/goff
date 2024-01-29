@@ -46,11 +46,11 @@ jobs:
          goff argocd app "./target/argocd" --repo-server="reposerver:8081" --output-dir=/tmp/target/
          goff diff "/tmp/source" "/tmp/target" --output-dir .
       - name: comment PR
-        uses: machine-learning-apps/pr-comment@master
+        uses: thollander/actions-comment-pull-request@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: diff.md
+          filePath: diff.md
 ```
 
 ## Gitlab
