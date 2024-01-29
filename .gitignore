@@ -4,3 +4,4 @@ graph.png
 graph.dot
 out/**
 build/**
+*.log
