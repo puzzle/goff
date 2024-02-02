@@ -700,6 +700,8 @@ github.com/argoproj/argo-cd/v2 v2.7.16 h1:8iW3hz9FJiw7/gxKPzBrzFc6NjcqtwdIJabekD
 github.com/argoproj/argo-cd/v2 v2.7.16/go.mod h1:BWe/N8eLgOqs+N49y3sVFVXOorxH5JhgAqxHa3ELH6Y=
 github.com/argoproj/argo-cd/v2 v2.9.5 h1:PdR23x9HVuh4phv+WO/2vvYSMf60BDtbDZNz6+md5Pw=
 github.com/argoproj/argo-cd/v2 v2.9.5/go.mod h1:3DQwsQvXosH/lpa7NYI9xBdDl5pdXQijO99ltKuSxQA=
+github.com/argoproj/argo-cd/v2 v2.9.6 h1:OE7zmMALtbwzxhooZsIvXrXeQqwFkatMv1MB9JQaugg=
+github.com/argoproj/argo-cd/v2 v2.9.6/go.mod h1:y24WY8Phm7hz9X7AlnkB5oq9swpoUiRlcT86wcTSRRI=
 github.com/argoproj/gitops-engine v0.7.1-0.20230526233214-ad9a694fe4bc h1:i6OgOvFFsoWiGBFEhhDNcYoRtxxtrVwcD7wCEeqhct4=
 github.com/argoproj/gitops-engine v0.7.1-0.20230526233214-ad9a694fe4bc/go.mod h1:WpA/B7tgwfz+sdNE3LqrTrb7ArEY1FOPI2pAGI0hfPc=
 github.com/argoproj/gitops-engine v0.7.1-0.20230906152414-b0fffe419a0f h1:cb2j6HxYJutMBvvQc/Y3EOSL7pcr5pcnP/4MNmYi4xc=

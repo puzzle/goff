@@ -73,7 +73,7 @@ require (
 )
 
 require (
-	github.com/argoproj/argo-cd/v2 v2.9.5
+	github.com/argoproj/argo-cd/v2 v2.9.6
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
 	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
