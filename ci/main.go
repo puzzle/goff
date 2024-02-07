@@ -98,7 +98,7 @@ func createGoBase(daggerClient *dagger.Client) *dagger.Container {
 	goChache := daggerClient.CacheVolume("go-cache")
 
 	base := daggerClient.Container(dagger.ContainerOpts{Platform: "linux/amd64"}).
-		From("golang:1.21.6").
+		From("golang:1.22.0").
 		WithMountedCache("/go/src", goMod).
 		WithMountedCache("/root/.cache/go-build", goChache)
 
