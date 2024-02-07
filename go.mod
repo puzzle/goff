@@ -60,9 +60,9 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.6 // indirect
 	github.com/xanzy/go-gitlab v0.91.1 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
-	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/mod v0.13.0 // indirect
-	golang.org/x/tools v0.14.0 // indirect
+	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
+	golang.org/x/mod v0.14.0 // indirect
+	golang.org/x/tools v0.15.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f // indirect
 	k8s.io/api v0.27.3 // indirect
@@ -81,7 +81,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
-	dagger.io/dagger v0.9.7
+	dagger.io/dagger v0.9.8
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20170808103936-bb23615498cd // indirect
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
