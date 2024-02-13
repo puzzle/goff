@@ -90,7 +90,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
-	dagger.io/dagger v0.9.8
+	dagger.io/dagger v0.9.10
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
