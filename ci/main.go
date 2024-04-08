@@ -142,10 +142,14 @@ func buildAndPushDevImage(ctx context.Context, golang *dagger.Container, g *Goff
 	goffBin := goffGitlab.File("/app/goff")
 	glabBin := goffGitlab.File("/go/bin/glab")
 
+	kustomizeContainer := daggerClient.Container().
+		From("registry.k8s.io/kustomize/kustomize:v5.4.1")
+
 	goffContainer := daggerClient.Container().
 		From("docker.io/alpine:3.18").
 		WithExec([]string{"addgroup", "-g", "1001", "goff"}).
 		WithExec([]string{"adduser", "-D", "-u", "1001", "-G", "goff", "goff"}).
+		WithFile("/usr/local/bin/kustomize", kustomizeContainer.File("/app/kustomize")).
 		WithFile("/bin/goff", goffBin).
 		WithFile("/bin/glab", glabBin).
 		WithExec([]string{"apk", "add", "git", "helm"})
