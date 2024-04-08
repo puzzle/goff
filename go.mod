@@ -28,7 +28,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
 	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 // indirect
 	github.com/adrg/xdg v0.4.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.317 // indirect
+	github.com/aws/aws-sdk-go v1.50.8 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.6.0 // indirect
@@ -77,12 +77,12 @@ require (
 	k8s.io/api v0.27.3 // indirect
 	k8s.io/kubernetes v1.26.11 // indirect
 	oras.land/oras-go/v2 v2.3.0 // indirect
-	sigs.k8s.io/controller-runtime v0.14.6 // indirect
+	sigs.k8s.io/controller-runtime v0.14.7 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.13.9 // indirect
 )
 
 require (
-	github.com/argoproj/argo-cd/v2 v2.10.1
+	github.com/argoproj/argo-cd/v2 v2.10.5
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
 	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
@@ -190,7 +190,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/apiextensions-apiserver v0.26.4 // indirect
+	k8s.io/apiextensions-apiserver v0.26.10 // indirect
 	k8s.io/apimachinery v0.27.3 // indirect
 	k8s.io/apiserver v0.26.11 // indirect
 	k8s.io/cli-runtime v0.26.11 // indirect
