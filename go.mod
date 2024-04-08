@@ -85,7 +85,6 @@ require (
 	github.com/argoproj/argo-cd/v2 v2.10.5
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
-	sigs.k8s.io/kustomize/kustomize/v4 v4.5.7
 )
 
 require (
@@ -203,7 +202,7 @@ require (
 	k8s.io/kubectl v0.26.4 // indirect
 	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
-	sigs.k8s.io/kustomize/api v0.12.1
+	sigs.k8s.io/kustomize/api v0.12.1 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )

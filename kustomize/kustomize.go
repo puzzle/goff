@@ -1,17 +1,15 @@
 package kustomize
 
 import (
-	"bytes"
+	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
-	"github.com/puzzle/goff/util"
-
 	"github.com/puzzle/goff/kustomize/kustomizationfile"
-
-	"sigs.k8s.io/kustomize/api/filesys"
-	"sigs.k8s.io/kustomize/kustomize/v4/commands/build"
+	"github.com/puzzle/goff/util"
 )
 
 func BuildAll(sourceDir, targetDir string) error {
@@ -21,43 +19,46 @@ func BuildAll(sourceDir, targetDir string) error {
 		return err
 	}
 
-	fSys := filesys.MakeFsOnDisk()
-	for _, dir := range dirs {
+	absoluteSourceDirPath, _ := filepath.Abs(sourceDir)
 
-		buffy := new(bytes.Buffer)
-		cmd := build.NewCmdBuild(fSys, build.MakeHelp("foo", "bar"), buffy)
-		if err := cmd.RunE(cmd, []string{dir}); err != nil {
-			return err
+	for _, dir := range dirs {
+		absoluteKustomizationPath, _ := filepath.Abs(dir)
+
+		var stdout strings.Builder
+
+		// TODO: Make customizable
+		cmd := exec.Command("kustomize", "build", absoluteKustomizationPath)
+		cmd.Stdout = &stdout
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("error running kustomize: %w", err)
 		}
 
-		if buffy.Len() == 0 {
+		if stdout.Len() == 0 {
+			// TODO: May log warning that there was no output for the directory.
 			continue
 		}
 
-		ad, _ := filepath.Abs(dir)
-		asd, _ := filepath.Abs(sourceDir)
-		base := strings.TrimPrefix(ad, asd)
-		outPath := filepath.Join(targetDir, base)
+		// Remove the source directory to the found directory of the `Kustomization`.
+		//
+		// Example: If source is `/dir/to/kustomization` and the found kustomization is `/dir/to/kustomization/overlays/x`,
+		// the basePath will be `overlays/x`.
+		basePath := strings.TrimPrefix(absoluteKustomizationPath, absoluteSourceDirPath)
+		outputPath := filepath.Join(targetDir, basePath)
+		log.Println(absoluteKustomizationPath, " -> ", outputPath)
 
-		err = os.MkdirAll(outPath, 0777)
-		if err != nil {
-			return err
+		if err := os.MkdirAll(outputPath, 0777); err != nil {
+			return fmt.Errorf("unable to create target direcories: %w", err)
 		}
 
-		outFiles := bytes.Split(buffy.Bytes(), []byte("---"))
-
-		for _, f := range outFiles {
-			content := string(f)
-			fileName, err := util.FileNameFromManifest(content)
+		manifests := strings.Split(stdout.String(), "---")
+		for _, manifest := range manifests {
+			fileName, err := util.FileNameFromManifest(manifest)
 			if err != nil {
-				return err
+				return fmt.Errorf("cannot get name of manifest: %w", err)
 			}
 
-			outFile := filepath.Join(outPath, fileName)
-
-			err = os.WriteFile(outFile, f, 0777)
-			if err != nil {
-				return err
+			if err := os.WriteFile(filepath.Join(outputPath, fileName), []byte(manifest), 0777); err != nil {
+				return fmt.Errorf("unable to write manifest to file: %w", err)
 			}
 		}
 	}
