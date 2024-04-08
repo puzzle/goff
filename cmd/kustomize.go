@@ -12,6 +12,7 @@ import (
 
 var outputDotDir *string
 var version *bool
+var binary *string
 
 var kustomizeCmd = &cobra.Command{
 	Use:   "kustomize [rootDir]",
@@ -24,8 +25,13 @@ var kustomizeCmd = &cobra.Command{
 	},
 	Long: `Generate a DOT file to visualize the dependencies between your kustomize components`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		kustomizeCmd := "kustomize"
+		if *binary != "" {
+			kustomizeCmd = *binary
+		}
+
 		if *version {
-			kustomizeCmd := exec.CommandContext(cmd.Context(), "kustomize", "version")
+			kustomizeCmd := exec.CommandContext(cmd.Context(), kustomizeCmd, "version")
 			kustomizeCmd.Stdout = cmd.OutOrStdout()
 			kustomizeCmd.Stderr = cmd.OutOrStderr()
 			if err := kustomizeCmd.Run(); err != nil {
@@ -43,6 +49,7 @@ func init() {
 	kustomizeCmd.AddCommand(kustomize.KustomizeBuildCmd)
 	rootCmd.AddCommand(kustomizeCmd)
 
+	binary = kustomizeCmd.Flags().String("binary", "", "Alternative kustomize binary")
 	version = kustomizeCmd.Flags().BoolP("version", "v", false, "Display version of kustomize")
 	outputDotDir = kustomizeCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
 }

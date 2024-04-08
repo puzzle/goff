@@ -20,7 +20,11 @@ var KustomizeBuildCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Long:  `Build all kustomize file within parent directory`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return kustomize.BuildAll(args[0], *outputBuildDir)
+		kustomizeCommand, err := cmd.Flags().GetString("binary")
+		if err != nil {
+			return err
+		}
+		return kustomize.BuildAll(kustomizeCommand, args[0], *outputBuildDir)
 	},
 }
 

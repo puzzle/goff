@@ -12,7 +12,7 @@ import (
 	"github.com/puzzle/goff/util"
 )
 
-func BuildAll(sourceDir, targetDir string) error {
+func BuildAll(kustomizeCommand, sourceDir, targetDir string) error {
 
 	dirs, err := kustomizationfile.New().GetDirectories(sourceDir)
 	if err != nil {
@@ -27,7 +27,7 @@ func BuildAll(sourceDir, targetDir string) error {
 		var stdout strings.Builder
 
 		// TODO: Make customizable
-		cmd := exec.Command("kustomize", "build", absoluteKustomizationPath)
+		cmd := exec.Command(kustomizeCommand, "build", absoluteKustomizationPath)
 		cmd.Stdout = &stdout
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("error running kustomize: %w", err)
