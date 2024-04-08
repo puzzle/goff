@@ -100,6 +100,17 @@ func testMainBranch(ctx context.Context, t *testing.T, daggerClient *dagger.Clie
 
 	_, err = daggerClient.Container().From(gpMain.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
 	assert.Nil(t, err, "container '%s' should exists and be functional", gpMain.getImageFullUrl("goff"))
+
+	_, err = daggerClient.Container().From(gpMain.getImageFullUrl("goff")).WithExec([]string{"kustomize", "--version"}).Sync(ctx)
+	assert.Nil(t, err, "container '%s' should exists and be functional", gpMain.getImageFullUrl("goff"))
+
+	// Test custom `kustomize`
+	goffContainer := daggerClient.Container().From(gpMain.getImageFullUrl("goff"))
+	kustomize4 := daggerClient.Container().
+		From("registry.k8s.io/kustomize/kustomize:v4.5.7")
+	goffContainer = goffContainer.WithFile("/opt/kustomize4", kustomize4.File("/app/kustomize"))
+	_, err = goffContainer.WithExec([]string{"kustomize", "--binary=/opt/kustomize4", "--version"}).Sync(ctx)
+	assert.Nil(t, err, "container '%s' should exists and be functional", gpMain.getImageFullUrl("goff"))
 }
 
 func testNonReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Client) {
@@ -135,8 +146,5 @@ func testReleaseTag(ctx context.Context, t *testing.T, daggerClient *dagger.Clie
 	assert.Nil(t, err)
 
 	_, err = daggerClient.Container().From(gprelease.getImageFullUrl("goff")).WithExec([]string{"--help"}).Sync(ctx)
-	assert.Nil(t, err, "container with name '%s' should exists", gprelease.getImageFullUrl("goff"))
-
-	_, err = daggerClient.Container().From(gprelease.getImageFullUrl("goff")).WithExec([]string{"kustomize", "--version"}).Sync(ctx)
 	assert.Nil(t, err, "container with name '%s' should exists", gprelease.getImageFullUrl("goff"))
 }
