@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dagger/dagger-for-github@v5
+        with:
+          verb: call 
+          args: --source=. build image stderr
+          version: "0.11.0"
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dagger/dagger-for-github@v5
+        with:
+          verb: call 
+          args: --source=. test
+          version: "0.11.0"
