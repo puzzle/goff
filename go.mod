@@ -22,8 +22,8 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
 	dario.cat/mergo v1.0.0 // indirect
-	github.com/99designs/gqlgen v0.17.31 // indirect
-	github.com/Khan/genqlient v0.6.0 // indirect
+	github.com/99designs/gqlgen v0.17.44 // indirect
+	github.com/Khan/genqlient v0.7.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
 	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718 // indirect
@@ -63,15 +63,16 @@ require (
 	github.com/prometheus/procfs v0.10.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
+	github.com/sosodev/duration v1.2.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/vektah/gqlparser/v2 v2.5.6 // indirect
+	github.com/vektah/gqlparser/v2 v2.5.11 // indirect
 	github.com/xanzy/go-gitlab v0.91.1 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/tools v0.15.0 // indirect
+	golang.org/x/mod v0.15.0 // indirect
+	golang.org/x/tools v0.18.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240325203815-454cdb8f5daa // indirect
 	k8s.io/api v0.27.3 // indirect
@@ -89,7 +90,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
-	dagger.io/dagger v0.11.0
+	dagger.io/dagger v0.11.1
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
@@ -175,12 +176,12 @@ require (
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.starlark.net v0.0.0-20220328144851-d1966c6b9fcd // indirect
-	golang.org/x/crypto v0.18.0 // indirect
-	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.7.0
 	golang.org/x/sys v0.17.0 // indirect
-	golang.org/x/term v0.16.0 // indirect
+	golang.org/x/term v0.17.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240123012728-ef4313101c80 // indirect
