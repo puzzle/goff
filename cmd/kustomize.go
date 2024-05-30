@@ -46,10 +46,10 @@ var kustomizeCmd = &cobra.Command{
 }
 
 func init() {
-	kustomizeCmd.AddCommand(kustomize.KustomizeBuildCmd)
-	rootCmd.AddCommand(kustomizeCmd)
-
-	binary = kustomizeCmd.Flags().String("binary", "", "Alternative kustomize binary")
+	binary = kustomizeCmd.PersistentFlags().String("binary", "", "Alternative kustomize binary")
 	version = kustomizeCmd.Flags().BoolP("version", "v", false, "Display version of kustomize")
 	outputDotDir = kustomizeCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
+
+	kustomizeCmd.AddCommand(kustomize.KustomizeBuildCmd)
+	rootCmd.AddCommand(kustomizeCmd)
 }
