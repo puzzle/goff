@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"cmp"
 	"fmt"
 	"os/exec"
 
@@ -25,10 +26,8 @@ var kustomizeCmd = &cobra.Command{
 	},
 	Long: `Generate a DOT file to visualize the dependencies between your kustomize components`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		kustomizeCmd := "kustomize"
-		if *binary != "" {
-			kustomizeCmd = *binary
-		}
+
+		kustomizeCmd := cmp.Or(*binary, "kustomize")
 
 		if *version {
 			kustomizeCmd := exec.CommandContext(cmd.Context(), kustomizeCmd, "version")

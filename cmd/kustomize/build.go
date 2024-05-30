@@ -1,6 +1,8 @@
 package kustomize
 
 import (
+	"cmp"
+
 	"github.com/puzzle/goff/kustomize"
 
 	"github.com/spf13/cobra"
@@ -24,6 +26,9 @@ var KustomizeBuildCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		kustomizeCommand = cmp.Or(kustomizeCommand, "kustomize")
+
 		return kustomize.BuildAll(kustomizeCommand, args[0], *outputBuildDir)
 	},
 }
