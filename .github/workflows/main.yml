@@ -11,7 +11,7 @@ on:
 
 permissions:
   id-token: write # Important for at least docker gha cache
-  contents: read
+  contents: write
 
 jobs:
   dagger:
@@ -50,6 +50,6 @@ jobs:
         env:
           REGISTRY_PASSWORD: '${{ secrets.REGISTRY_PASSWORD }}'
           REGISTRY_USER: '${{ secrets.REGISTRY_USER }}'
-          GITHUB_ACCESS_TOKEN:  '${{ secrets.GH_ACCESS_TOKEN }}'
+          GITHUB_ACCESS_TOKEN:  '${{ secrets.GITHUB_TOKEN }}'
           REGISTRY_URL: '${{ secrets.REGISTRY_URL }}'
 
