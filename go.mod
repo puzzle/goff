@@ -66,7 +66,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sosodev/duration v1.3.1 // indirect
-	github.com/spf13/cast v1.5.1 // indirect
+	github.com/spf13/cast v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.16 // indirect
@@ -94,7 +94,7 @@ require (
 )
 
 require (
-	github.com/argoproj/argo-cd/v2 v2.10.10
+	github.com/argoproj/argo-cd/v2 v2.11.5
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
 )
@@ -107,7 +107,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230828082145-3c4c8a2d2371 // indirect
-	github.com/argoproj/gitops-engine v0.7.1-0.20240416142647-fbecbb86e412 // indirect
+	github.com/argoproj/gitops-engine v0.7.1-0.20240715141605-18ba62e1f1fb // indirect
 	github.com/argoproj/pkg v0.13.7-0.20230627120311-a4dd357b057e // indirect
 	github.com/bombsimon/logrusr/v2 v2.0.1 // indirect
 	github.com/bradleyfalzon/ghinstallation/v2 v2.6.0 // indirect
@@ -119,7 +119,7 @@ require (
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
+	github.com/evanphx/json-patch v5.9.0+incompatible // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d // indirect
 	github.com/fatih/camelcase v1.0.0 // indirect
 	github.com/fvbommel/sortorder v1.0.1 // indirect
@@ -183,7 +183,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xlab/treeprint v1.1.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.42.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.46.1 // indirect
 	go.opentelemetry.io/otel v1.27.0 // indirect
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.starlark.net v0.0.0-20220328144851-d1966c6b9fcd // indirect
@@ -216,7 +216,7 @@ require (
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.12.1 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 replace (

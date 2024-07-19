@@ -682,10 +682,14 @@ github.com/argoproj/argo-cd/v2 v2.10.7 h1:WEY1jsk2KMkGJ+4uoUyS6R2r0shrV5Kk2B9++c
 github.com/argoproj/argo-cd/v2 v2.10.7/go.mod h1:Ep0WnxPmx9UFh0jEwBadYTHe7iIR90RNvRbSWF8VrFM=
 github.com/argoproj/argo-cd/v2 v2.10.10 h1:mkeO31DpIFLmcOwx9d7MQtF2tw72riVvtrVtbD30LA0=
 github.com/argoproj/argo-cd/v2 v2.10.10/go.mod h1:oVWqhg12hAZSKnkuFDIpnpXkQm9WgTzD1T4wtxeowDI=
+github.com/argoproj/argo-cd/v2 v2.11.5 h1:ngg7KW4c5Rjd/F1yDM//iGueVm/JLQ80JFQjOTzopp8=
+github.com/argoproj/argo-cd/v2 v2.11.5/go.mod h1:RfmtLRki6JBwq9jkgCMie9MzfvYqs0DfzbuG3JcDrPk=
 github.com/argoproj/gitops-engine v0.7.1-0.20240122213038-792124280fcc h1:Fv94Mi2WvtvPkEH5WoWC3iy/VoQRLeSsE0hyg0n2UkY=
 github.com/argoproj/gitops-engine v0.7.1-0.20240122213038-792124280fcc/go.mod h1:gWE8uROi7hIkWGNAVM+8FWkMfo0vZ03SLx/aFw/DBzg=
 github.com/argoproj/gitops-engine v0.7.1-0.20240416142647-fbecbb86e412 h1:je2wJpWtaoS55mA5MBPCeDnKMeF42pkxO9Oa5KbWrdg=
 github.com/argoproj/gitops-engine v0.7.1-0.20240416142647-fbecbb86e412/go.mod h1:gWE8uROi7hIkWGNAVM+8FWkMfo0vZ03SLx/aFw/DBzg=
+github.com/argoproj/gitops-engine v0.7.1-0.20240715141605-18ba62e1f1fb h1:PbngWUqmtdVxU5qRR0Dngeo6AXhxY3qZi6RlpfCLbuI=
+github.com/argoproj/gitops-engine v0.7.1-0.20240715141605-18ba62e1f1fb/go.mod h1:d4eLldeEFyZIcVySAMhXhnh1tTa4qfvPYfut9B8UClw=
 github.com/argoproj/pkg v0.13.7-0.20230627120311-a4dd357b057e h1:kuLQvJqwwRMQTheT4MFyKVM8Txncu21CHT4yBWUl1Mk=
 github.com/argoproj/pkg v0.13.7-0.20230627120311-a4dd357b057e/go.mod h1:xBN5PLx2MoK63dmPfMo/PGBvd77K1Y0m/rzZOe4cs1s=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
@@ -796,6 +800,8 @@ github.com/envoyproxy/protoc-gen-validate v1.0.4/go.mod h1:qys6tmnRsYrQqIhm2bvKZ
 github.com/evanphx/json-patch v4.12.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/evanphx/json-patch v5.6.0+incompatible h1:jBYDEEiFBPxA0v50tFdvOzQQTCvpL6mnFh5mB2/l16U=
 github.com/evanphx/json-patch v5.6.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
+github.com/evanphx/json-patch v5.9.0+incompatible h1:fBXyNpNMuTTDdquAq/uisOr2lShz4oaXpDTX2bLe7ls=
+github.com/evanphx/json-patch v5.9.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/evanphx/json-patch/v5 v5.6.0 h1:b91NhWfaz02IuVxO9faSllyAtNXHMPkC5J8sJCLunww=
 github.com/evanphx/json-patch/v5 v5.6.0/go.mod h1:G79N1coSVB93tBe7j6PhzjmR3/2VvlbKOFpnXhI9Bw4=
 github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d h1:105gxyaGwCFad8crR9dcMQWvV9Hvulu6hwUh4tWPJnM=
@@ -1257,6 +1263,8 @@ github.com/spf13/afero v1.11.0/go.mod h1:GH9Y3pIexgf1MTIWtNGyogA5MwRIDXGUr+hbWNo
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/spf13/cast v1.5.1 h1:R+kOtfhWQE6TVQzY+4D7wJLBgkdVasCEFxSUBYBYIlA=
 github.com/spf13/cast v1.5.1/go.mod h1:b9PdjNptOpzXr7Rq1q9gJML/2cdGQAo69NKzQ10KN48=
+github.com/spf13/cast v1.6.0 h1:GEiTHELF+vaR5dhz3VqZfFSzZjYbgeKDpBxQVS4GYJ0=
+github.com/spf13/cast v1.6.0/go.mod h1:ancEpBxwJDODSW/UG4rDrAqiKolqNNh2DX3mk86cAdo=
 github.com/spf13/cobra v1.7.0/go.mod h1:uLxZILRyS/50WlhOIKD7W6V5bgeIt+4sICxh6uRMrb0=
 github.com/spf13/cobra v1.8.0 h1:7aJaZx1B85qltLMc546zn58BxxfZdR/W22ej9CFoEf0=
 github.com/spf13/cobra v1.8.0/go.mod h1:WXLWApfZ71AjXPya3WOlMsY9yMs7YeiHhFVlvLyhcho=
@@ -1330,6 +1338,8 @@ go.opencensus.io v0.23.0/go.mod h1:XItmlyltB5F7CS4xOC1DcqMoFqwtC6OG2xF7mCv7P7E=
 go.opencensus.io v0.24.0/go.mod h1:vNK8G9p7aAivkbmorf4v+7Hgx+Zs0yY+0fOtgBfjQKo=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.42.0 h1:ZOLJc06r4CB42laIXg/7udr0pbZyuAihN10A/XuiQRY=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.42.0/go.mod h1:5z+/ZWJQKXa9YT34fQNx5K8Hd1EoIhvtUygUQPqEOgQ=
+go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.46.1 h1:SpGay3w+nEwMpfVnbqOLH5gY52/foP8RE8UzTZ1pdSE=
+go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.46.1/go.mod h1:4UoMYEZOC0yN/sPGH76KPkkU7zgiEWYWL9vwmbnTJPE=
 go.opentelemetry.io/otel v1.24.0 h1:0LAOdjNmQeSTzGBzduGe/rU4tZhMwL5rWgtp9Ku5Jfo=
 go.opentelemetry.io/otel v1.24.0/go.mod h1:W7b9Ozg4nkF5tWI5zsXkaKKDjdVjpD4oAt9Qi/MArHo=
 go.opentelemetry.io/otel v1.27.0 h1:9BZoF3yMK/O1AafMiQTVu0YDj5Ea4hPhxCs7sGva+cg=
@@ -2265,3 +2275,5 @@ sigs.k8s.io/structured-merge-diff/v4 v4.4.1/go.mod h1:N8hJocpFajUSSeSJ9bOZ77Vzej
 sigs.k8s.io/yaml v1.2.0/go.mod h1:yfXDCHCao9+ENCvLSE62v9VSji2MKu5jeNfTrofGhJc=
 sigs.k8s.io/yaml v1.3.0 h1:a2VclLzOGrwOHDiV8EfBGhvjHvP46CtW5j6POvhYGGo=
 sigs.k8s.io/yaml v1.3.0/go.mod h1:GeOyir5tyXNByN85N/dRIT9es5UQNerPYEKK56eTBm8=
+sigs.k8s.io/yaml v1.4.0 h1:Mk1wCc2gy/F0THH0TAp1QYyJNzRm2KCLy3o5ASXVI5E=
+sigs.k8s.io/yaml v1.4.0/go.mod h1:Ejl7/uTz7PSA4eKMyQCUTnhZYNmLIl+5c2lQPGR2BPY=
