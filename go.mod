@@ -214,7 +214,7 @@ require (
 	github.com/hexops/gotextdiff v1.0.3
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/sync v0.7.0
+	golang.org/x/sync v0.8.0
 	sigs.k8s.io/controller-runtime v0.17.2
 )
 
