@@ -98,15 +98,17 @@ func renderFile(file, repoServerUrl, outputDir string, client apiclient.RepoServ
 		}
 	}
 
-	refSources, err := argo.GetRefSources(context.Background(), app.Spec, repoDB)
+	// As long as rollback is false, revisions can be empty.
+	// See: https://github.com/argoproj/argo-cd/blob/ec30a48bce7a60046836e481cd2160e28c59231d/util/argo/argo.go#L472
+	refSources, err := argo.GetRefSources(context.Background(), app.Spec.Sources, app.Spec.Project, repoDB.GetRepository, []string{}, false)
 	if err != nil {
 		return err
 	}
 
-	appSrc := app.Spec.GetSourcePtr()
+	appSrc := app.Spec.GetSource()
 
 	req := &apiclient.ManifestRequest{
-		ApplicationSource:  appSrc,
+		ApplicationSource:  &appSrc,
 		AppName:            "goff-test",
 		NoCache:            true,
 		RefSources:         refSources,

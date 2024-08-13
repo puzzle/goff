@@ -11,6 +11,8 @@ import (
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ghodss/yaml"
 	log "github.com/sirupsen/logrus"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 func RenderApplicationSets(inputDir, outDir string) error {
@@ -71,7 +73,12 @@ func RenderApplicationSet(appSetFile, outDir string) error {
 	supportedGens := make(map[string]generators.Generator)
 	supportedGens["List"] = listGen
 
-	apps, _, err := generateApplications(*appSet, supportedGens)
+	// "List" generator does not use "client" at the moment.
+	// See: https://github.com/argoproj/argo-cd/blob/ec30a48bce7a60046836e481cd2160e28c59231d/applicationset/generators/list.go#L31
+	// TODO: Create unit test to check if list generator still works without real client.
+	fakeClient := fake.NewClientBuilder().Build()
+
+	apps, _, err := generateApplications(*appSet, supportedGens, fakeClient)
 	if err != nil {
 		return fmt.Errorf("could not generate applications: %w", err)
 	}
@@ -110,7 +117,11 @@ func writeApplications(apps []v1alpha1.Application, ouputDir string) error {
 	return nil
 }
 
-func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedGenerators map[string]generators.Generator) ([]v1alpha1.Application, v1alpha1.ApplicationSetReasonType, error) {
+func generateApplications(
+	applicationSetInfo v1alpha1.ApplicationSet,
+	supportedGenerators map[string]generators.Generator,
+	client client.Client,
+) ([]v1alpha1.Application, v1alpha1.ApplicationSetReasonType, error) {
 	var res []v1alpha1.Application
 
 	var firstError error
@@ -119,7 +130,14 @@ func generateApplications(applicationSetInfo v1alpha1.ApplicationSet, supportedG
 	renderer := utils.Render{}
 
 	for _, requestedGenerator := range applicationSetInfo.Spec.Generators {
-		t, err := generators.Transform(requestedGenerator, supportedGenerators, applicationSetInfo.Spec.Template, &applicationSetInfo, map[string]interface{}{})
+		t, err := generators.Transform(
+			requestedGenerator,
+			supportedGenerators,
+			applicationSetInfo.Spec.Template,
+			&applicationSetInfo, map[string]interface{}{},
+			client,
+		)
+
 		if err != nil {
 
 			log.Errorf("error generating application from params")
