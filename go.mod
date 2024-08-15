@@ -207,7 +207,7 @@ require (
 )
 
 require (
-	dagger.io/dagger v0.12.4
+	dagger.io/dagger v0.12.5
 	github.com/argoproj/argo-cd/v2 v2.12.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
