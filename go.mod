@@ -50,6 +50,7 @@ require (
 	github.com/davidmz/go-pageant v1.0.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/distribution/reference v0.5.0 // indirect
+	github.com/dlclark/regexp2 v1.11.2 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/evanphx/json-patch v5.9.0+incompatible // indirect
@@ -208,7 +209,7 @@ require (
 
 require (
 	dagger.io/dagger v0.12.5
-	github.com/argoproj/argo-cd/v2 v2.12.0
+	github.com/argoproj/argo-cd/v2 v2.12.6
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-godo/godo v2.0.9+incompatible
 	github.com/hexops/gotextdiff v1.0.3
