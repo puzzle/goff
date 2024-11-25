@@ -213,7 +213,7 @@ require (
 	github.com/go-godo/godo v2.0.9+incompatible
 	github.com/hexops/gotextdiff v1.0.3
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/sync v0.7.0
 	sigs.k8s.io/controller-runtime v0.17.2
 )
